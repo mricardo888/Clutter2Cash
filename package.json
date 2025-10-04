@@ -21,7 +21,9 @@
     "expo-linear-gradient": "^15.0.7",
     "expo-navigation-bar": "~5.0.8",
     "expo-status-bar": "~3.0.8",
+    "express": "^5.1.0",
     "lucide-react-native": "^0.544.0",
+    "multer": "^2.0.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.4",
@@ -42,5 +44,13 @@
     "ai"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mricardo888/Clutter2Cash.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mricardo888/Clutter2Cash/issues"
+  },
+  "homepage": "https://github.com/mricardo888/Clutter2Cash#readme"
 }

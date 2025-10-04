@@ -16,7 +16,7 @@ import {
   Text,
 } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Type, Leaf } from "lucide-react-native";
+import { Camera, Type, Leaf, Image as ImageIcon } from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, ScannedItem } from "../types";
 import { ApiService } from "../services/api";
@@ -46,7 +46,30 @@ export default function HomeScreen({ navigation }: Props) {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission needed",
+        "Sorry, we need camera permissions to take photos!"
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
     });
@@ -118,14 +141,24 @@ export default function HomeScreen({ navigation }: Props) {
               </Button>
             </View>
           ) : (
-            <Button
-              mode="contained"
-              onPress={pickImage}
-              style={styles.uploadButton}
-              icon={() => <Camera size={20} color="white" />}
-            >
-              Choose Photo
-            </Button>
+            <View style={styles.photoButtonsContainer}>
+              <Button
+                mode="contained"
+                onPress={takePhoto}
+                style={styles.photoButton}
+                icon={() => <Camera size={20} color="white" />}
+              >
+                Take Photo
+              </Button>
+              <Button
+                mode="outlined"
+                onPress={pickImage}
+                style={styles.photoButton}
+                icon={() => <ImageIcon size={20} color={theme.colors.primary} />}
+              >
+                Choose from Gallery
+              </Button>
+            </View>
           )}
         </Card.Content>
       </Card>
@@ -224,7 +257,10 @@ const styles = StyleSheet.create({
     borderRadius: theme.roundness,
     marginBottom: spacing.md,
   },
-  uploadButton: {
+  photoButtonsContainer: {
+    gap: spacing.md,
+  },
+  photoButton: {
     marginTop: spacing.sm,
   },
   removeButton: {

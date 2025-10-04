@@ -154,7 +154,9 @@ export default function HomeScreen({ navigation }: Props) {
                 mode="outlined"
                 onPress={pickImage}
                 style={styles.photoButton}
-                icon={() => <ImageIcon size={20} color={theme.colors.primary} />}
+                icon={() => (
+                  <ImageIcon size={20} color={theme.colors.primary} />
+                )}
               >
                 Choose from Gallery
               </Button>

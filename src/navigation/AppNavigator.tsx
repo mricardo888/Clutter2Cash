@@ -1,16 +1,16 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, BarChart3, User } from 'lucide-react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Home, BarChart3, User } from "lucide-react-native";
+import { Provider as PaperProvider } from "react-native-paper";
 
-import HomeScreen from '../screens/HomeScreen';
-import ResultsScreen from '../screens/ResultsScreen';
-import DashboardScreen from '../screens/DashboardScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import { RootStackParamList, TabParamList } from '../types';
-import { theme } from '../utils/theme';
+import HomeScreen from "../screens/HomeScreen";
+import ResultsScreen from "../screens/ResultsScreen";
+import DashboardScreen from "../screens/DashboardScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import { RootStackParamList, TabParamList } from "../types";
+import { theme } from "../utils/theme";
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -22,15 +22,17 @@ function TabNavigator() {
         tabBarIcon: ({ focused, color, size }) => {
           let IconComponent;
 
-          if (route.name === 'HomeTab') {
+          if (route.name === "HomeTab") {
             IconComponent = Home;
-          } else if (route.name === 'DashboardTab') {
+          } else if (route.name === "DashboardTab") {
             IconComponent = BarChart3;
-          } else if (route.name === 'ProfileTab') {
+          } else if (route.name === "ProfileTab") {
             IconComponent = User;
           }
 
-          return <IconComponent size={size} color={color} />;
+          return IconComponent ? (
+            <IconComponent size={size} color={color} />
+          ) : null;
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.disabled,
@@ -43,33 +45,33 @@ function TabNavigator() {
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '500',
+          fontWeight: "500",
         },
         headerShown: false,
       })}
     >
-      <Tab.Screen 
-        name="HomeTab" 
+      <Tab.Screen
+        name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Scan',
-          title: 'Home',
+          tabBarLabel: "Scan",
+          title: "Home",
         }}
       />
-      <Tab.Screen 
-        name="DashboardTab" 
+      <Tab.Screen
+        name="DashboardTab"
         component={DashboardScreen}
         options={{
-          tabBarLabel: 'History',
-          title: 'Dashboard',
+          tabBarLabel: "History",
+          title: "Dashboard",
         }}
       />
-      <Tab.Screen 
-        name="ProfileTab" 
+      <Tab.Screen
+        name="ProfileTab"
         component={ProfileScreen}
         options={{
-          tabBarLabel: 'Profile',
-          title: 'Profile',
+          tabBarLabel: "Profile",
+          title: "Profile",
         }}
       />
     </Tab.Navigator>
@@ -88,7 +90,7 @@ export default function AppNavigator() {
             },
             headerTintColor: theme.colors.primary,
             headerTitleStyle: {
-              fontWeight: 'bold',
+              fontWeight: "bold",
               fontSize: 18,
             },
             headerBackTitleVisible: false,
@@ -103,7 +105,7 @@ export default function AppNavigator() {
             name="Results"
             component={ResultsScreen}
             options={{
-              title: 'Analysis Results',
+              title: "Analysis Results",
               headerLeft: () => null, // Disable back button
             }}
           />
@@ -111,14 +113,14 @@ export default function AppNavigator() {
             name="Dashboard"
             component={DashboardScreen}
             options={{
-              title: 'Your Dashboard',
+              title: "Your Dashboard",
             }}
           />
           <Stack.Screen
             name="Profile"
             component={ProfileScreen}
             options={{
-              title: 'Profile',
+              title: "Profile",
             }}
           />
         </Stack.Navigator>

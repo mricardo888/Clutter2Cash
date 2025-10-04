@@ -1,4 +1,52 @@
 import { AnalysisResponse, ScannedItem } from '../types';
+import * as FileSystem from 'expo-file-system';
+
+export class ApiService {
+  private static baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+
+  static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {
+    const formData = new FormData();
+
+    if (imageUri) {
+      // Convert local URI to file for upload
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      if (fileInfo.exists) {
+        const fileName = imageUri.split('/').pop() || 'photo.jpg';
+        const fileType = `image/${fileName.split('.').pop() || 'jpg'}`;
+
+        formData.append('image', {
+          uri: imageUri,
+          name: fileName,
+          type: fileType,
+        } as any);
+      }
+    }
+
+    if (textInput) {
+      formData.append('description', textInput);
+    }
+
+    const response = await fetch(`${this.baseUrl}/analyze`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to analyze item.');
+    }
+
+    const data = await response.json();
+    return data as AnalysisResponse;
+  }
+
+}
+
+
+/*import { AnalysisResponse, ScannedItem } from '../types';
 
 // Mock data for demonstration
 const mockAnalysisData: AnalysisResponse[] = [
@@ -80,3 +128,4 @@ export class ApiService {
     console.log('Saving item:', item);
   }
 }
+  */

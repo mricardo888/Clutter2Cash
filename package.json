@@ -11,12 +11,15 @@
   "dependencies": {
     "@expo/cli": "^54.0.10",
     "@expo/vector-icons": "^15.0.2",
+    "@google/genai": "^0.3.0",
     "@react-navigation/bottom-tabs": "^7.4.7",
     "@react-navigation/native": "^7.1.17",
     "@react-navigation/stack": "^7.4.8",
+    "dotenv": "^16.4.5",
     "expo": "~54.0.12",
     "expo-image-picker": "^17.0.8",
     "expo-linear-gradient": "^15.0.7",
+    "expo-navigation-bar": "~5.0.8",
     "expo-status-bar": "~3.0.8",
     "lucide-react-native": "^0.544.0",
     "react": "19.1.0",
@@ -25,9 +28,6 @@
     "react-native-paper": "^5.14.5",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "^4.16.0",
-    "react-native-web": "^0.21.0",
-    "@google/genai": "^0.3.0",
-    "dotenv": "^16.4.5",
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
@@ -42,6 +42,5 @@
     "ai"
   ],
   "author": "",
-  "license": "MIT",
-  "private": true
+  "license": "MIT"
 }

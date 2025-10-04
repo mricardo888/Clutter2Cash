@@ -22,10 +22,10 @@ export class ApiService {
 
     // Mock response - in real app, this would call the backend
     const randomItem = mockAnalysisData[Math.floor(Math.random() * mockAnalysisData.length)];
-    
+
     // If text input provided, try to match it
     if (textInput) {
-      const matchedItem = mockAnalysisData.find(item => 
+      const matchedItem = mockAnalysisData.find(item =>
         item.item.toLowerCase().includes(textInput.toLowerCase()) ||
         textInput.toLowerCase().includes(item.item.toLowerCase())
       );
@@ -40,7 +40,7 @@ export class ApiService {
   // Get user's scan history
   static async getHistory(): Promise<ScannedItem[]> {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Mock history data
     return [
       {

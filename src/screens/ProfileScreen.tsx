@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ScrollView, Switch, Alert } from "react-native";
 import {
   Card,
@@ -20,6 +20,9 @@ import {
   Share2,
   Award,
   Leaf,
+  Sparkles,
+  Target,
+  TrendingUp,
 } from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../types";
@@ -35,9 +38,10 @@ interface Props {
 }
 
 export default function ProfileScreen({ navigation }: Props) {
-  const { theme, toggleTheme, setThemeMode } = useTheme();
+  const { theme, toggleTheme, setThemeMode, isDark } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [ecoTips, setEcoTips] = useState(true);
+  const [darkModeEnabled, setDarkModeEnabled] = useState(isDark);
 
   const handleThemeModeChange = (mode: "light" | "dark" | "system") => {
     setThemeMode(mode);
@@ -50,6 +54,16 @@ export default function ProfileScreen({ navigation }: Props) {
   const handleEcoTipsToggle = (value: boolean) => {
     setEcoTips(value);
   };
+
+  const handleDarkModeToggle = (value: boolean) => {
+    setDarkModeEnabled(value);
+    toggleTheme();
+  };
+
+  // Sync local dark mode state with theme context
+  useEffect(() => {
+    setDarkModeEnabled(isDark);
+  }, [isDark]);
 
   const handleShare = () => {
     Alert.alert(
@@ -104,7 +118,7 @@ export default function ProfileScreen({ navigation }: Props) {
             <Text style={styles.quickStatText}>{userStats.co2Saved} saved</Text>
           </View>
           <View style={styles.quickStat}>
-            <Award size={16} color={theme.colors.accent} />
+            <Target size={16} color={theme.colors.accent} />
             <Text style={styles.quickStatText}>
               {userStats.itemsScanned} items
             </Text>
@@ -114,7 +128,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
       <Card style={styles.badgesCard}>
         <Card.Content>
-          <Title style={styles.cardTitle}>🏆 Your Badges</Title>
+          <Title style={styles.cardTitle}>Your Badges</Title>
           <View style={styles.badgesContainer}>
             {userStats.badges.map((badge, index) => (
               <View key={index} style={styles.badge}>
@@ -128,7 +142,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
       <Card style={styles.settingsCard}>
         <Card.Content>
-          <Title style={styles.cardTitle}>⚙️ Settings</Title>
+          <Title style={styles.cardTitle}>Settings</Title>
 
           <List.Item
             title="Dark Mode"
@@ -136,16 +150,14 @@ export default function ProfileScreen({ navigation }: Props) {
             left={() => <Moon size={24} color={theme.colors.primary} />}
             right={() => (
               <Switch
-                value={theme.colors.background === "#121212"}
-                onValueChange={toggleTheme}
+                value={darkModeEnabled}
+                onValueChange={handleDarkModeToggle}
                 trackColor={{
-                  false: theme.colors.border,
+                  false: theme.colors.disabled,
                   true: theme.colors.primary,
                 }}
                 thumbColor={
-                  theme.colors.background === "#121212"
-                    ? theme.colors.surface
-                    : theme.colors.border
+                  darkModeEnabled ? theme.colors.surface : theme.colors.disabled
                 }
               />
             )}
@@ -197,7 +209,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
       <Card style={styles.actionsCard}>
         <Card.Content>
-          <Title style={styles.cardTitle}>📱 App Actions</Title>
+          <Title style={styles.cardTitle}>App Actions</Title>
 
           <List.Item
             title="Share App"
@@ -228,7 +240,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
       <Card style={styles.aboutCard}>
         <Card.Content>
-          <Title style={styles.cardTitle}>🌱 About Clutter2Cash</Title>
+          <Title style={styles.cardTitle}>About Clutter2Cash</Title>
           <Paragraph style={styles.aboutText}>
             Clutter2Cash helps you turn unused household items into cash while
             promoting sustainability. Every item you sell, donate, or recycle

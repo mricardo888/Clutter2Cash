@@ -94,6 +94,7 @@ interface ThemeContextType {
   paperTheme: typeof MD3LightTheme;
   toggleTheme: () => void;
   setThemeMode: (mode: ThemeMode) => void;
+  isDark: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -177,6 +178,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     paperTheme,
     toggleTheme,
     setThemeMode: handleSetThemeMode,
+    isDark,
   };
 
   return (

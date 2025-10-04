@@ -15,6 +15,8 @@ import {
   CheckCircle,
   Heart,
   Recycle,
+  Sparkles,
+  TrendingUp,
 } from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
@@ -107,7 +109,7 @@ export default function ResultsScreen({ navigation, route }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <CheckCircle size={48} color={theme.colors.success} />
+        <Sparkles size={48} color={theme.colors.primary} />
         <Title style={styles.title}>Analysis Complete!</Title>
         <Paragraph style={styles.subtitle}>
           Here's what we found about your item
@@ -126,7 +128,7 @@ export default function ResultsScreen({ navigation, route }: Props) {
 
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <DollarSign size={24} color={theme.colors.success} />
+              <TrendingUp size={24} color={theme.colors.success} />
               <Text style={styles.statValue}>${item.value}</Text>
               <Text style={styles.statLabel}>Estimated Value</Text>
             </View>

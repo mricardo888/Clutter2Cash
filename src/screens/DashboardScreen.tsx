@@ -21,6 +21,9 @@ import {
   Package,
   TrendingUp,
   Calendar,
+  BarChart3,
+  Target,
+  Clock,
 } from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, ScannedItem, UserStats } from "../types";
@@ -127,7 +130,7 @@ export default function DashboardScreen({ navigation }: Props) {
           <View style={styles.itemInfo}>
             <Title style={styles.itemName}>{item.name}</Title>
             <Text style={styles.itemDate}>
-              <Calendar size={14} color={theme.colors.placeholder} />{" "}
+              <Clock size={14} color={theme.colors.placeholder} />{" "}
               {formatDate(item.timestamp)}
             </Text>
           </View>
@@ -170,7 +173,7 @@ export default function DashboardScreen({ navigation }: Props) {
 
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
-            <TrendingUp size={24} color={theme.colors.success} />
+            <DollarSign size={24} color={theme.colors.success} />
             <Text style={styles.statValue}>${stats.totalValueUnlocked}</Text>
             <Text style={styles.statLabel}>Total Value Unlocked</Text>
           </View>
@@ -182,7 +185,7 @@ export default function DashboardScreen({ navigation }: Props) {
           </View>
 
           <View style={styles.statItem}>
-            <Package size={24} color={theme.colors.accent} />
+            <BarChart3 size={24} color={theme.colors.accent} />
             <Text style={styles.statValue}>{stats.itemsScanned}</Text>
             <Text style={styles.statLabel}>Items Scanned</Text>
           </View>

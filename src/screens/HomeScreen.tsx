@@ -16,7 +16,14 @@ import {
   Text,
 } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Type, Leaf, Image as ImageIcon } from "lucide-react-native";
+import {
+  Camera,
+  Type,
+  Leaf,
+  Image as ImageIcon,
+  Sparkles,
+  DollarSign,
+} from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, ScannedItem } from "../types";
 import { ApiService } from "../services/api";
@@ -119,15 +126,21 @@ export default function HomeScreen({ navigation }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Title style={styles.title}>🌱 Clutter2Cash</Title>
+        <View style={styles.titleContainer}>
+          <Leaf size={32} color={theme.colors.primary} />
+          <Title style={styles.title}>Clutter2Cash</Title>
+        </View>
         <Paragraph style={styles.subtitle}>
-          Turn your unused items into cash while saving the planet!
+          Turn your unused items into cash while saving the planet
         </Paragraph>
       </View>
 
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.cardTitle}>📸 Upload Photo</Title>
+          <View style={styles.cardHeader}>
+            <Camera size={24} color={theme.colors.primary} />
+            <Title style={styles.cardTitle}>Upload Photo</Title>
+          </View>
           <Paragraph style={styles.cardDescription}>
             Take or select a photo of your item for AI analysis
           </Paragraph>
@@ -170,7 +183,10 @@ export default function HomeScreen({ navigation }: Props) {
 
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.cardTitle}>⌨️ Enter Item Details</Title>
+          <View style={styles.cardHeader}>
+            <Type size={24} color={theme.colors.primary} />
+            <Title style={styles.cardTitle}>Enter Item Details</Title>
+          </View>
           <Paragraph style={styles.cardDescription}>
             Or type the brand and model of your item
           </Paragraph>
@@ -191,7 +207,7 @@ export default function HomeScreen({ navigation }: Props) {
           <View style={styles.ecoContent}>
             <Leaf size={24} color={theme.colors.primary} />
             <View style={styles.ecoText}>
-              <Text style={styles.ecoTitle}>🌍 Eco Impact</Text>
+              <Text style={styles.ecoTitle}>Eco Impact</Text>
               <Text style={styles.ecoDescription}>
                 Every item you sell, donate, or recycle helps reduce waste and
                 saves precious resources!
@@ -207,6 +223,7 @@ export default function HomeScreen({ navigation }: Props) {
         disabled={isAnalyzing || (!selectedImage && !textInput.trim())}
         style={styles.analyzeButton}
         contentStyle={styles.analyzeButtonContent}
+        icon={() => (isAnalyzing ? null : <Sparkles size={20} color="white" />)}
       >
         {isAnalyzing ? (
           <ActivityIndicator size="small" color="white" />
@@ -230,30 +247,44 @@ const createStyles = (theme: any) =>
       backgroundColor: theme.colors.surface,
       marginBottom: theme.spacing.md,
     },
+    titleContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
+    },
     title: {
-      fontSize: 28,
-      fontWeight: "bold",
+      fontSize: 32,
+      fontWeight: "700",
       color: theme.colors.primary,
-      marginBottom: theme.spacing.sm,
+      letterSpacing: -0.5,
     },
     subtitle: {
       fontSize: 16,
       textAlign: "center",
-      color: theme.colors.text,
+      color: theme.colors.textSecondary,
+      lineHeight: 24,
     },
     card: {
       margin: theme.spacing.md,
       marginBottom: theme.spacing.sm,
     },
-    cardTitle: {
-      fontSize: 18,
-      fontWeight: "600",
+    cardHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.sm,
       marginBottom: theme.spacing.xs,
+    },
+    cardTitle: {
+      fontSize: 20,
+      fontWeight: "600",
+      color: theme.colors.text,
     },
     cardDescription: {
       fontSize: 14,
-      color: theme.colors.placeholder,
+      color: theme.colors.textSecondary,
       marginBottom: theme.spacing.md,
+      lineHeight: 20,
     },
     imageContainer: {
       alignItems: "center",
@@ -314,5 +345,6 @@ const createStyles = (theme: any) =>
     },
     analyzeButtonContent: {
       paddingVertical: theme.spacing.sm,
+      gap: theme.spacing.sm,
     },
   });

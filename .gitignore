@@ -1,46 +1,44 @@
-# Node modules
-/node_modules/
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# dependencies
+node_modules/
 
-# Dependency directories
-bower_components/
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-# Build output
-/dist/
-/build/
-/public/
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
-# WebStorm project files
-.idea/
+# Metro
+.metro-health-check*
 
-# OS-specific files
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
 .DS_Store
-Thumbs.db
-
-# npm package lock file
-package-lock.json
-yarn.lock
-
-# Test coverage reports
-/coverage/
-
-# env files (add your own if needed)
-/.env
-.env.local
-.env.*.local
+*.pem
 
 # JetBrains IDE specific
 .idea/
+/results
+# local env files
+.env*.local
 
-# VSCode specific
-.vscode/
+# typescript
+*.tsbuildinfo
 
-# Mac OS X file system attributes
-.AppleDouble
-.LSOverride
+# generated native folders
+/ios
+/android

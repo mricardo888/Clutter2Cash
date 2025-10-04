@@ -23,12 +23,12 @@ import { useTheme } from "../contexts/ThemeContext";
 import { ApiService } from "../services/api";
 
 type ProfileScreenNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    "Profile"
+  RootStackParamList,
+  "Profile"
 >;
 
 interface Props {
-    navigation: ProfileScreenNavigationProp;
+  navigation: ProfileScreenNavigationProp;
 }
 
 export default function ProfileScreen({ navigation }: Props) {
@@ -260,6 +260,10 @@ export default function ProfileScreen({ navigation }: Props) {
                         </View>
                     )}
                 </View>
+              ))}
+            </View>
+          </Card.Content>
+        </Card>
 
                 <Card style={styles.statsCard}>
                     <Card.Content>

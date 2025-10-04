@@ -10,9 +10,6 @@ const userSchema = new mongoose.Schema({
         value: Number, 
         ecoImpact: String, 
         timestamp: { type: Date, default: Date.now } 
-
-
-        
     }],
     badges: [String]
 });

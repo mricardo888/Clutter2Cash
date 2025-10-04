@@ -4,7 +4,7 @@ import * as AuthSession from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth0Config } from '../config/auth0.config';
 import { ApiService } from '../services/api';
-import {makeRedirectUri} from "expo-auth-session";
+import { makeRedirectUri } from "expo-auth-session";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -36,8 +36,9 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
     const redirectUri = makeRedirectUri({
         scheme: 'com.clutter2cash',
         path: 'auth',
-        preferLocalhost: true,
     });
+
+    console.log('🔗 Redirect URI:', redirectUri);
 
     const discovery = AuthSession.useAutoDiscovery(`https://${auth0Config.domain}`);
 
@@ -49,6 +50,8 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
             extraParams: {
                 audience: auth0Config.audience,
             },
+            usePKCE: true,
+            responseType: AuthSession.ResponseType.Code,
         },
         discovery
     );
@@ -58,8 +61,14 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, []);
 
     useEffect(() => {
+        console.log('Auth result changed:', result);
         if (result?.type === 'success') {
+            console.log('Success! Calling handleAuthResponse');
             handleAuthResponse(result.params);
+        } else if (result?.type === 'error') {
+            console.error('Auth error result:', result.error);
+        } else if (result?.type === 'dismiss' || result?.type === 'cancel') {
+            console.log('User dismissed/cancelled login');
         }
     }, [result]);
 
@@ -89,9 +98,23 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const handleAuthResponse = async (params: any) => {
         try {
+            console.log('Auth params received:', params);
+            console.log('Code verifier available:', !!request?.codeVerifier);
+
             const { code } = params;
 
-            // Exchange code for tokens
+            if (!code) {
+                console.error('No authorization code received');
+                return;
+            }
+
+            if (!request?.codeVerifier) {
+                console.error('No code verifier available');
+                return;
+            }
+
+            console.log('Exchanging code for tokens...');
+
             const tokenResponse = await fetch(`https://${auth0Config.domain}/oauth/token`, {
                 method: 'POST',
                 headers: {
@@ -102,13 +125,21 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
                     client_id: auth0Config.clientId,
                     code,
                     redirect_uri: redirectUri,
+                    code_verifier: request.codeVerifier,
                 }),
             });
 
             const tokens = await tokenResponse.json();
+            console.log('Token exchange response:', tokens);
+
+            if (tokens.error) {
+                console.error('Token error:', tokens.error_description);
+                return;
+            }
 
             if (tokens.access_token) {
-                // Get user info
+                console.log('Got access token, fetching user info...');
+
                 const userResponse = await fetch(`https://${auth0Config.domain}/userinfo`, {
                     headers: {
                         Authorization: `Bearer ${tokens.access_token}`,
@@ -116,8 +147,8 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
                 });
 
                 const userInfo = await userResponse.json();
+                console.log('User info:', userInfo);
 
-                // Save to storage
                 await AsyncStorage.setItem('@auth_token', tokens.access_token);
                 await AsyncStorage.setItem('@user_data', JSON.stringify(userInfo));
 
@@ -133,7 +164,11 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const login = async () => {
         try {
-            await promptAsync();
+            console.log('Starting login...');
+            console.log('Request object:', request);
+            console.log('Redirect URI:', redirectUri);
+            const authResult = await promptAsync();
+            console.log('Prompt result:', authResult);
         } catch (error) {
             console.error('Login error:', error);
         }
@@ -148,7 +183,6 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
             setUser(null);
             setIsAuthenticated(false);
 
-            // Clear Auth0 session
             const logoutUrl = `https://${auth0Config.domain}/v2/logout?client_id=${auth0Config.clientId}&returnTo=${encodeURIComponent(redirectUri)}`;
             await WebBrowser.openAuthSessionAsync(logoutUrl, redirectUri);
         } catch (error) {

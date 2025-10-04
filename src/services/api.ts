@@ -69,7 +69,7 @@ export class ApiService {
         }
 
         const formData = new FormData();
-
+        console.log(this.baseUrl)
         if (imageUri) {
             try {
                 const fileName = imageUri.split('/').pop() || 'photo.jpg';

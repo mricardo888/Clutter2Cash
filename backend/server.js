@@ -139,7 +139,7 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
 
         imagePath = req.file?.path;
 
-        console.log("🔍 Analyzing item...");
+        console.log("ðŸ” Analyzing item...");
         const analyzer = new aipriceAnalyzer();
         const result = await analyzer.analyzeItem(imagePath, description);
         console.log("✅ Analysis complete:", result);
@@ -380,5 +380,5 @@ app.get("/", (req, res) => {
 
 // --- START SERVER ---
 app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`âœ… Server running on http://localhost:${PORT}`);
 });

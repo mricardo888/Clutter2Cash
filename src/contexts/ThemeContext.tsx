@@ -166,11 +166,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const paperTheme = isDark
     ? {
         ...MD3DarkTheme,
-        colors: { ...MD3DarkTheme.colors, primary: theme.colors.primary },
+        colors: {
+          ...MD3DarkTheme.colors,
+          primary: theme.colors.primary,
+          secondary: theme.colors.primary, // Use primary instead of blue
+          surface: theme.colors.surface,
+          background: theme.colors.background,
+          onSurface: theme.colors.text,
+          onBackground: theme.colors.text,
+        },
       }
     : {
         ...MD3LightTheme,
-        colors: { ...MD3LightTheme.colors, primary: theme.colors.primary },
+        colors: {
+          ...MD3LightTheme.colors,
+          primary: theme.colors.primary,
+          secondary: theme.colors.primary, // Use primary instead of blue
+          surface: theme.colors.surface,
+          background: theme.colors.background,
+          onSurface: theme.colors.text,
+          onBackground: theme.colors.text,
+        },
       };
 
   const contextValue: ThemeContextType = {

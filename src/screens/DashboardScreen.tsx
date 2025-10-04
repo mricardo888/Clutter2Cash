@@ -188,7 +188,7 @@ export default function DashboardScreen({ navigation }: Props) {
           </View>
 
           <View style={styles.statItem}>
-            <BarChart3 size={24} color={theme.colors.accent} />
+            <BarChart3 size={24} color={theme.colors.primary} />
             <Text style={styles.statValue}>{stats.itemsScanned}</Text>
             <Text style={styles.statLabel}>Items Scanned</Text>
           </View>
@@ -299,21 +299,23 @@ const createStyles = (theme: any, insets: any) =>
       color: theme.colors.placeholder,
     },
     header: {
-      padding: 24,
+      padding: theme.spacing.lg,
+      alignItems: "center",
       backgroundColor: theme.colors.surface,
+      marginBottom: theme.spacing.md,
     },
     title: {
       fontSize: 32,
       fontWeight: "700",
       color: theme.colors.primary,
-      marginBottom: 4,
+      marginBottom: theme.spacing.md,
       letterSpacing: -0.5,
     },
     subtitle: {
       fontSize: 16,
+      textAlign: "center",
       color: theme.colors.textSecondary,
       lineHeight: 24,
-      textAlign: "left",
     },
     listContainer: {
       padding: 16,
@@ -377,6 +379,7 @@ const createStyles = (theme: any, insets: any) =>
     itemCard: {
       marginTop: 16,
       marginBottom: 16,
+      backgroundColor: theme.colors.card,
     },
     itemHeader: {
       flexDirection: "row",
@@ -424,6 +427,7 @@ const createStyles = (theme: any, insets: any) =>
     },
     emptyCard: {
       marginTop: 16,
+      backgroundColor: theme.colors.card,
     },
     emptyContent: {
       alignItems: "center",

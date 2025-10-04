@@ -237,7 +237,7 @@ export default function DashboardScreen({ navigation }: Props) {
       />
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-          <Title style={styles.title}>📊 Your Dashboard</Title>
+          <Title style={styles.title}>Your Dashboard</Title>
           <Paragraph style={styles.subtitle}>
             Track your decluttering journey and environmental impact
           </Paragraph>
@@ -301,18 +301,19 @@ const createStyles = (theme: any, insets: any) =>
     header: {
       padding: 24,
       backgroundColor: theme.colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.disabled,
     },
     title: {
-      fontSize: 24,
-      fontWeight: "bold",
+      fontSize: 32,
+      fontWeight: "700",
       color: theme.colors.primary,
       marginBottom: 4,
+      letterSpacing: -0.5,
     },
     subtitle: {
       fontSize: 16,
-      color: theme.colors.text,
+      color: theme.colors.textSecondary,
+      lineHeight: 24,
+      textAlign: "left",
     },
     listContainer: {
       padding: 16,

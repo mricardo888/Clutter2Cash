@@ -1,0 +1,23 @@
+{
+  "name": "ebay-price-analyzer",
+  "version": "1.0.0",
+  "description": "AI-powered eBay price analysis using Gemini and eBay APIs",
+  "type": "module",
+  "main": "ebayPriceAnalysis.js",
+  "scripts": {
+    "start": "node example.js",
+    "test": "node ebayPriceAnalysis.js"
+  },
+  "keywords": [
+    "ebay",
+    "gemini",
+    "price-analysis",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^0.3.0",
+    "dotenv": "^16.4.5"
+  }
+}

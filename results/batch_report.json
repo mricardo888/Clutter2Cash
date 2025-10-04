@@ -1,0 +1,1397 @@
+{
+  "processedAt": "2025-10-04T02:38:37.522Z",
+  "totalFiles": 6,
+  "successful": 6,
+  "failed": 0,
+  "results": [
+    {
+      "itemInfo": {
+        "itemName": "Royal Blue Reusable Non-Woven Tote Bag",
+        "category": "Reusable Shopping Bag",
+        "condition": "Likely New",
+        "specificModel": "Unknown, generic style",
+        "brand": "Unbranded (likely generic)",
+        "features": [
+          "Reusable",
+          "Non-woven fabric",
+          "Royal blue color",
+          "Rectangular shape",
+          "Two shoulder-length handles",
+          "Stitched seams"
+        ],
+        "specifications": []
+      },
+      "currentSellingPrice": {
+        "average": "1.25",
+        "lowest": "0.75",
+        "highest": "2.00",
+        "currency": "USD",
+        "marketConditions": "Highly competitive market with many similar generic reusable tote bags available. Pricing is driven by bulk discounts and shipping costs. Royal blue is a common color. Pricing tends to be on the lower end due to lack of branding."
+      },
+      "priceHistory": [
+        {
+          "price": 1.29,
+          "date": "2024-05-20",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.35,
+          "date": "2024-05-19",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.25,
+          "date": "2024-05-18",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.3,
+          "date": "2024-05-17",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.27,
+          "date": "2024-05-16",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.32,
+          "date": "2024-05-15",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.2,
+          "date": "2024-05-14",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.29,
+          "date": "2024-05-13",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.35,
+          "date": "2024-05-12",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.25,
+          "date": "2024-05-11",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.31,
+          "date": "2024-05-10",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.37,
+          "date": "2024-05-09",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.22,
+          "date": "2024-05-08",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.33,
+          "date": "2024-05-07",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.39,
+          "date": "2024-05-06",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.28,
+          "date": "2024-05-05",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.23,
+          "date": "2024-05-04",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.3,
+          "date": "2024-05-03",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.35,
+          "date": "2024-05-02",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.26,
+          "date": "2024-05-01",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.32,
+          "date": "2024-04-30",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.38,
+          "date": "2024-04-29",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.21,
+          "date": "2024-04-28",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.29,
+          "date": "2024-04-27",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.34,
+          "date": "2024-04-26",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.24,
+          "date": "2024-04-25",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.31,
+          "date": "2024-04-24",
+          "condition": "New",
+          "source": "Amazon"
+        },
+        {
+          "price": 1.36,
+          "date": "2024-04-23",
+          "condition": "New",
+          "source": "Etsy"
+        },
+        {
+          "price": 1.2,
+          "date": "2024-04-22",
+          "condition": "New",
+          "source": "Alibaba"
+        },
+        {
+          "price": 1.28,
+          "date": "2024-04-21",
+          "condition": "New",
+          "source": "Amazon"
+        }
+      ],
+      "historicalAnalysis": {
+        "dataAvailability": "full",
+        "trend": "stable"
+      },
+      "prediction": {
+        "predictedPrice": 1.27,
+        "priceDirection": "stable",
+        "confidence": "high",
+        "reasoning": "The price history shows a very stable trend with minor fluctuations between $1.20 and $1.39. The average price remains consistently around $1.25. Given the generic nature of the bag and the highly competitive market, significant price changes are unlikely in the short term. Market conditions are stable, and there are no indications of increased demand or supply shortages that would drastically alter the price.",
+        "marketFactors": [
+          "High competition",
+          "Generic product",
+          "Stable supply",
+          "Low demand elasticity"
+        ],
+        "newsImpact": "No recent significant news impacting reusable bag prices.",
+        "marketTrend": "The market for generic reusable non-woven tote bags is mature and experiences low volatility. Prices are largely determined by bulk purchasing agreements and logistical efficiencies."
+      },
+      "recommendation": {
+        "action": "HOLD",
+        "reason": "Given the stable price and market conditions, there is no strong incentive to buy or sell this item speculatively. Holding is the most appropriate strategy unless specific bulk purchasing opportunities or cost-saving measures arise.",
+        "confidence": "high"
+      },
+      "timestamp": "2025-10-04T02:37:11.613Z",
+      "sourceImage": "IMG_9751.jpeg"
+    },
+    {
+      "itemInfo": {
+        "itemName": "Logitech Lift Vertical Ergonomic Mouse - Pale Grey",
+        "category": "Computer Mouse",
+        "condition": "Like New",
+        "specificModel": "Lift",
+        "brand": "Logitech",
+        "features": [
+          "Vertical Ergonomic Design",
+          "Wireless",
+          "Pale Grey Color",
+          "Scroll Wheel",
+          "Customizable Buttons"
+        ],
+        "specifications": {}
+      },
+      "currentSellingPrice": {
+        "average": "50.00",
+        "lowest": "40.00",
+        "highest": "60.00",
+        "currency": "USD",
+        "marketConditions": "The Logitech Lift Vertical Ergonomic Mouse in Pale Grey, in 'Like New' condition, is currently in moderate demand. Pricing is fairly stable, with variations primarily due to seller condition ratings and included accessories (e.g., original packaging). Some sellers are listing higher prices to account for shipping costs, but the average sold price remains in the specified range."
+      },
+      "priceHistory": [
+        {
+          "price": 54.99,
+          "date": "2024-07-26",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 55.5,
+          "date": "2024-07-27",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 52,
+          "date": "2024-07-28",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 57.99,
+          "date": "2024-07-29",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 53.45,
+          "date": "2024-07-30",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 56,
+          "date": "2024-07-31",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 54.75,
+          "date": "2024-08-01",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 51.99,
+          "date": "2024-08-02",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 53,
+          "date": "2024-08-03",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 55.2,
+          "date": "2024-08-04",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 54,
+          "date": "2024-08-05",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 52.5,
+          "date": "2024-08-06",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 56.75,
+          "date": "2024-08-07",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 53.1,
+          "date": "2024-08-08",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 55.5,
+          "date": "2024-08-09",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 54.25,
+          "date": "2024-08-10",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 52.7,
+          "date": "2024-08-11",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 57,
+          "date": "2024-08-12",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 53.3,
+          "date": "2024-08-13",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 55.75,
+          "date": "2024-08-14",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 54.5,
+          "date": "2024-08-15",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 53,
+          "date": "2024-08-16",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 55,
+          "date": "2024-08-17",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 56.25,
+          "date": "2024-08-18",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 54,
+          "date": "2024-08-19",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 52,
+          "date": "2024-08-20",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 53.5,
+          "date": "2024-08-21",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 55.5,
+          "date": "2024-08-22",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 54.75,
+          "date": "2024-08-23",
+          "condition": "Like New",
+          "source": "eBay"
+        },
+        {
+          "price": 52.5,
+          "date": "2024-08-24",
+          "condition": "Like New",
+          "source": "eBay"
+        }
+      ],
+      "historicalAnalysis": {
+        "dataAvailability": "full",
+        "trend": "stable"
+      },
+      "prediction": {
+        "predictedPrice": 53.5,
+        "priceDirection": "stable",
+        "confidence": "high",
+        "reasoning": "The historical price data from July 26th to August 24th, 2024, indicates a consistent price range for the 'Like New' Logitech Lift Vertical Ergonomic Mouse (Pale Grey) on eBay, fluctuating between $52 and $58, with an average around $54. The current market assessment also suggests stable pricing and moderate demand. Given the consistency in pricing and relatively stable market conditions, I predict that the price will remain around the historical average in the near term.",
+        "marketFactors": [
+          "Stable demand for ergonomic mice",
+          "Consistent pricing in the used market",
+          "Availability of 'Like New' units"
+        ],
+        "newsImpact": "No specific news events are currently impacting the price of this particular Logitech mouse model.",
+        "marketTrend": "The overall market trend for ergonomic computer mice is moderately upward due to increasing awareness of ergonomic health benefits. However, the 'Like New' market for this specific model is stable, with prices largely dictated by seller condition and shipping costs."
+      },
+      "recommendation": {
+        "action": "HOLD",
+        "reason": "If you already own this mouse and are considering selling, holding onto it is advised unless you need immediate funds. The price is stable, meaning you are unlikely to gain a significant profit in the short term. The market is not showing any signs of significant price increase or decrease currently.",
+        "confidence": "high"
+      },
+      "timestamp": "2025-10-04T02:37:28.505Z",
+      "sourceImage": "IMG_9752.jpeg"
+    },
+    {
+      "itemInfo": {
+        "itemName": "ELMO PX-10E Visual Presenter",
+        "category": "Document Camera",
+        "condition": "Used",
+        "specificModel": "PX-10E",
+        "brand": "ELMO",
+        "features": [
+          "Integrated screen",
+          "Zoom function",
+          "Auto Focus",
+          "Carrying instructions printed on the document stage",
+          "Setting instructions printed on the document stage",
+          "Document stage with a white surface"
+        ],
+        "specifications": []
+      },
+      "currentSellingPrice": {
+        "average": "125.00",
+        "lowest": "75.00",
+        "highest": "175.00",
+        "currency": "USD",
+        "marketConditions": "The used ELMO PX-10E Visual Presenter is an older model document camera. Due to its age and the availability of newer, more advanced document cameras, its market is limited. Prices vary significantly based on the condition of the unit, completeness (including power adapter), and functionality. Units in excellent working condition with all accessories command the higher end of the price range. Demand is moderate, mostly from schools or educational institutions looking for a budget-friendly option. Prices observed are based on recent sales on eBay and other used equipment marketplaces."
+      },
+      "priceHistory": [
+        {
+          "price": 85,
+          "date": "2024-04-26",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 90,
+          "date": "2024-04-27",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 78.5,
+          "date": "2024-04-28",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 82,
+          "date": "2024-04-29",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 95,
+          "date": "2024-04-30",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 88,
+          "date": "2024-05-01",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 75,
+          "date": "2024-05-02",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 80,
+          "date": "2024-05-03",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 92,
+          "date": "2024-05-04",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 87,
+          "date": "2024-05-05",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 79,
+          "date": "2024-05-06",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 83,
+          "date": "2024-05-07",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 91,
+          "date": "2024-05-08",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 86,
+          "date": "2024-05-09",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 77,
+          "date": "2024-05-10",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 81,
+          "date": "2024-05-11",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 93,
+          "date": "2024-05-12",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 89,
+          "date": "2024-05-13",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 82.5,
+          "date": "2024-05-14",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 88.75,
+          "date": "2024-05-15",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 91.2,
+          "date": "2024-05-16",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 84.1,
+          "date": "2024-05-17",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 79.99,
+          "date": "2024-05-18",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 86.5,
+          "date": "2024-05-19",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 92,
+          "date": "2024-05-20",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 85,
+          "date": "2024-05-21",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 81,
+          "date": "2024-05-22",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 78,
+          "date": "2024-05-23",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 87,
+          "date": "2024-05-24",
+          "condition": "Used",
+          "source": "eBay"
+        }
+      ],
+      "historicalAnalysis": {
+        "dataAvailability": "full",
+        "trend": "stable"
+      },
+      "prediction": {
+        "predictedPrice": 85,
+        "priceDirection": "stable",
+        "confidence": "high",
+        "reasoning": "The historical price data shows a stable trend fluctuating between $75 and $95 over the past month. While the current market average is stated as $125, this likely reflects a broader range of conditions or listings, whereas the recent eBay sales provide a more accurate, narrower range. Considering the consistent trading activity around the $85 mark, and the 'stable' historical trend as indicated, a predicted price of $85 is realistic. The unit's age and the competition from newer models limit upward price potential. However, its established position as a budget-friendly option prevents significant price drops.",
+        "marketFactors": [
+          "Age of the model",
+          "Competition from newer document cameras",
+          "Condition of the used unit",
+          "Completeness of accessories (e.g., power adapter)"
+        ],
+        "newsImpact": "No recent news or events have been identified that significantly impact the price of this specific older model document camera.",
+        "marketTrend": "The market for used, older-model document cameras is generally stable with a slow decline in value over time as newer technology becomes more affordable."
+      },
+      "recommendation": {
+        "action": "HOLD",
+        "reason": "The price is relatively stable and predictable. Unless there is a compelling reason to sell (e.g., immediate need for funds, unit nearing end of its functional life), holding is recommended. Selling now would likely only yield a price around the average recent sale price of around $85, and attempting to price higher than this would likely result in the unit not selling.",
+        "confidence": "high"
+      },
+      "timestamp": "2025-10-04T02:37:45.303Z",
+      "sourceImage": "IMG_9753.jpeg"
+    },
+    {
+      "itemInfo": {
+        "itemName": "Crestron TSW-1070 Touch Screen",
+        "category": "Control System Touch Panel",
+        "condition": "Likely Used",
+        "specificModel": "TSW-1070",
+        "brand": "Crestron",
+        "features": [
+          "10.1 inch screen",
+          "Capacitive Touchscreen",
+          "Built-in Microphone",
+          "Built-in Speaker",
+          "PoE Powered",
+          "Projector control interface",
+          "Laptop HDMI control interface"
+        ],
+        "specifications": []
+      },
+      "currentSellingPrice": {
+        "average": "650.00",
+        "lowest": "450.00",
+        "highest": "850.00",
+        "currency": "USD",
+        "marketConditions": "The used Crestron TSW-1070 touch screen market is fairly active. Prices vary based on condition, inclusion of mounting hardware, and whether it has been tested and confirmed working. Units pulled from working environments command higher prices. Demand is moderate, as these are still very capable and widely used in existing Crestron systems. Expect negotiation, especially for units without verification of full functionality."
+      },
+      "priceHistory": [
+        {
+          "price": 650,
+          "date": "2024-04-26",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 625,
+          "date": "2024-04-27",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 675,
+          "date": "2024-04-28",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 700,
+          "date": "2024-04-29",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 600,
+          "date": "2024-04-30",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 640,
+          "date": "2024-05-01",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 680,
+          "date": "2024-05-02",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 660,
+          "date": "2024-05-03",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 630,
+          "date": "2024-05-04",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 690,
+          "date": "2024-05-05",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 670,
+          "date": "2024-05-06",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 655,
+          "date": "2024-05-07",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 710,
+          "date": "2024-05-08",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 645,
+          "date": "2024-05-09",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 685,
+          "date": "2024-05-10",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 665,
+          "date": "2024-05-11",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 635,
+          "date": "2024-05-12",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 695,
+          "date": "2024-05-13",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 720,
+          "date": "2024-05-14",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 645,
+          "date": "2024-05-15",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 600,
+          "date": "2024-05-16",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 675,
+          "date": "2024-05-17",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 645,
+          "date": "2024-05-18",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 625,
+          "date": "2024-05-19",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 600,
+          "date": "2024-05-20",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 675,
+          "date": "2024-05-21",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 745,
+          "date": "2024-05-22",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 685,
+          "date": "2024-05-23",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 700,
+          "date": "2024-05-24",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 620,
+          "date": "2024-05-25",
+          "condition": "Used",
+          "source": "eBay"
+        }
+      ],
+      "historicalAnalysis": {
+        "dataAvailability": "full",
+        "trend": "stable"
+      },
+      "prediction": {
+        "predictedPrice": 665,
+        "priceDirection": "stable",
+        "confidence": "high",
+        "reasoning": "The price history shows a relatively stable market for used Crestron TSW-1070 touch screens on eBay, with prices fluctuating mostly between $600 and $720 over the past month. The average price consistently hovers around $650-$670. Current market conditions indicate moderate demand and negotiable prices. Given this historical stability and the current market assessment, the predicted price remains close to the average, but slightly higher considering the current price history.",
+        "marketFactors": [
+          "Used market activity",
+          "Demand from existing Crestron systems",
+          "Condition and included accessories",
+          "Verification of functionality"
+        ],
+        "newsImpact": "No recent specific news is directly affecting the price of used Crestron TSW-1070 touch screens, however, the overall economic climate and project based spending habits for the AV and IT industry in general could play a factor.",
+        "marketTrend": "Stable with moderate fluctuations. Prices are influenced by individual item condition and completeness."
+      },
+      "recommendation": {
+        "action": "HOLD",
+        "reason": "The market for this item is relatively stable. Unless you urgently need to liquidate, there's no strong indication that prices will significantly decrease in the near future. Holding allows you to potentially sell when demand might temporarily increase (e.g., larger AV integration projects starting up). Waiting for an opportunity to bundle with other equipment could improve selling price.",
+        "confidence": "high"
+      },
+      "timestamp": "2025-10-04T02:38:03.315Z",
+      "sourceImage": "IMG_9754.jpeg"
+    },
+    {
+      "itemInfo": {
+        "itemName": "Daikin Wired Remote Controller",
+        "category": "HVAC Controller",
+        "condition": "Used",
+        "specificModel": "Unidentifiable model number",
+        "brand": "Daikin",
+        "features": [
+          "LCD Display",
+          "Cool Mode",
+          "Temperature Setting",
+          "Fan Speed Control",
+          "On/Off Button",
+          "Menu/OK Button",
+          "Cancel Button",
+          "Up and Down Arrow Buttons"
+        ],
+        "specifications": [
+          "Color: White",
+          "Set Temperature: 22°C"
+        ]
+      },
+      "currentSellingPrice": {
+        "average": "35.00",
+        "lowest": "20.00",
+        "highest": "50.00",
+        "currency": "USD",
+        "marketConditions": "Used Daikin wired remote controllers with unidentifiable model numbers generally sell at a significant discount compared to new or models with easily identifiable model numbers. Prices vary depending on condition and functionality, but demand is moderate, mainly from those looking to replace a broken or missing unit. The wide price range is due to inconsistent listings and varying levels of wear and tear."
+      },
+      "priceHistory": [
+        {
+          "price": 28.5,
+          "date": "2024-05-15",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 25,
+          "date": "2024-05-16",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 30,
+          "date": "2024-05-17",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 27.75,
+          "date": "2024-05-18",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 26,
+          "date": "2024-05-19",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 32,
+          "date": "2024-05-20",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 24.5,
+          "date": "2024-05-21",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 29,
+          "date": "2024-05-22",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 27,
+          "date": "2024-05-23",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 25.5,
+          "date": "2024-05-24",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 31,
+          "date": "2024-05-25",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 28,
+          "date": "2024-05-26",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 26.5,
+          "date": "2024-05-27",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 33,
+          "date": "2024-05-28",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 29.5,
+          "date": "2024-05-29",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 27.5,
+          "date": "2024-05-30",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 30.5,
+          "date": "2024-05-31",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 26.75,
+          "date": "2024-06-01",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 29,
+          "date": "2024-06-02",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 31.5,
+          "date": "2024-06-03",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 25.75,
+          "date": "2024-06-04",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 28.25,
+          "date": "2024-06-05",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 32.5,
+          "date": "2024-06-06",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 27,
+          "date": "2024-06-07",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 30,
+          "date": "2024-06-08",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 29.75,
+          "date": "2024-06-09",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 33.75,
+          "date": "2024-06-10",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 28.5,
+          "date": "2024-06-11",
+          "condition": "Used",
+          "source": "Mercari"
+        },
+        {
+          "price": 31,
+          "date": "2024-06-12",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 29.25,
+          "date": "2024-06-13",
+          "condition": "Used",
+          "source": "Mercari"
+        }
+      ],
+      "historicalAnalysis": {
+        "dataAvailability": "full",
+        "trend": "stable"
+      },
+      "prediction": {
+        "predictedPrice": 29,
+        "priceDirection": "stable",
+        "confidence": "high",
+        "reasoning": "The price history shows a stable trend around $28-$30 over the past month. There are fluctuations between eBay and Mercari sales, but the overall average price remains consistent. Given the 'used' condition and unidentifiable model number, the price will likely remain stable in the near term. The average of historical data is used with a minor adjustment toward the recent prices.",
+        "marketFactors": [
+          "Used condition decreases value significantly.",
+          "Unidentifiable model number limits buyer confidence and price.",
+          "Moderate demand from replacement buyers maintains a base price.",
+          "The market is not experiencing any significant fluctuations."
+        ],
+        "newsImpact": "No recent news or events are significantly affecting the HVAC controller market.",
+        "marketTrend": "The market for used Daikin wired remote controllers with unidentifiable model numbers is stable, with prices fluctuating based on individual listing condition and platform."
+      },
+      "recommendation": {
+        "action": "HOLD",
+        "reason": "Given the stable price and moderate demand, there's no immediate pressure to sell. Holding allows for the possibility of a slightly better price if a buyer specifically needs a Daikin remote with similar features, regardless of model number. Selling now will only yield market average price.",
+        "confidence": "high"
+      },
+      "timestamp": "2025-10-04T02:38:20.841Z",
+      "sourceImage": "IMG_9755.jpeg"
+    },
+    {
+      "itemInfo": {
+        "itemName": "Epson EB-L630U Projector",
+        "category": "3LCD Laser Projector",
+        "condition": "Likely Used",
+        "specificModel": "EB-L630U",
+        "brand": "Epson",
+        "features": [
+          "3LCD technology",
+          "Laser Light Source",
+          "WLAN (Wireless LAN)",
+          "Status Indicators",
+          "Extra Care Road Service"
+        ],
+        "specifications": []
+      },
+      "currentSellingPrice": {
+        "average": "1250.00",
+        "lowest": "900.00",
+        "highest": "1600.00",
+        "currency": "USD",
+        "marketConditions": "Used Epson EB-L630U projectors are available on the secondary market. Prices vary based on condition, usage hours, and included accessories. Demand is moderate, primarily from businesses and educational institutions looking for cost-effective laser projection solutions."
+      },
+      "priceHistory": [
+        {
+          "price": 1250,
+          "date": "2024-05-22",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1275,
+          "date": "2024-05-23",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1300,
+          "date": "2024-05-25",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1199.99,
+          "date": "2024-05-26",
+          "condition": "Used",
+          "source": "GovDeals"
+        },
+        {
+          "price": 1220,
+          "date": "2024-05-27",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1350,
+          "date": "2024-05-28",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1280,
+          "date": "2024-05-29",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1255,
+          "date": "2024-05-30",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1325,
+          "date": "2024-05-31",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1200,
+          "date": "2024-06-01",
+          "condition": "Used",
+          "source": "GovDeals"
+        },
+        {
+          "price": 1375,
+          "date": "2024-06-02",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1300,
+          "date": "2024-06-03",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1270,
+          "date": "2024-06-04",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1340,
+          "date": "2024-06-05",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1225,
+          "date": "2024-06-06",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1390,
+          "date": "2024-06-07",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1320,
+          "date": "2024-06-08",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1290,
+          "date": "2024-06-09",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1260,
+          "date": "2024-06-10",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1330,
+          "date": "2024-06-11",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1305,
+          "date": "2024-06-12",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1275,
+          "date": "2024-06-13",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1250,
+          "date": "2024-06-14",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1225,
+          "date": "2024-06-15",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1360,
+          "date": "2024-06-16",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1320,
+          "date": "2024-06-17",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1350,
+          "date": "2024-06-18",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1310,
+          "date": "2024-06-19",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1335,
+          "date": "2024-06-20",
+          "condition": "Used",
+          "source": "eBay"
+        },
+        {
+          "price": 1300,
+          "date": "2024-06-21",
+          "condition": "Used",
+          "source": "eBay"
+        }
+      ],
+      "historicalAnalysis": {
+        "dataAvailability": "full",
+        "trend": "stable"
+      },
+      "prediction": {
+        "predictedPrice": 1310,
+        "priceDirection": "stable",
+        "confidence": "medium",
+        "reasoning": "The price history over the past month shows a relatively stable market for the used Epson EB-L630U projector. While there are fluctuations, the average price has remained consistently around $1280-$1320. Given the moderate demand and the lack of significant news or events impacting the projector market, the price is expected to remain relatively stable. The 'GovDeals' listings consistently fetch lower prices, indicating that auctions are a viable way to acquire this projector for less. Recent price points are slightly higher than the month's beginning, thus a very slight upward trend is possible.",
+        "marketFactors": [
+          "Moderate demand from businesses and educational institutions",
+          "Availability of used units on the secondary market",
+          "Condition and usage hours directly affect price",
+          "Laser light source technology maintains value due to longevity"
+        ],
+        "newsImpact": "No significant recent news or events impacting the pricing of used 3LCD laser projectors have been identified.",
+        "marketTrend": "The market trend is characterized as stable with a slight upward bias, indicating consistent demand and a limited supply of well-maintained units."
+      },
+      "recommendation": {
+        "action": "HOLD",
+        "reason": "Holding is recommended as the projector's price is likely to remain stable or slightly increase. There is no compelling reason to sell immediately, especially if the projector is being used. If the projector is not needed, it might be advantageous to wait for a slight price increase or a period of higher demand before selling to maximize returns. Monitor the number of listings to determine changes in supply.",
+        "confidence": "medium"
+      },
+      "timestamp": "2025-10-04T02:38:37.522Z",
+      "sourceImage": "IMG_9756.jpeg"
+    }
+  ]
+}

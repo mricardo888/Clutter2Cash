@@ -134,6 +134,7 @@ export default function HomeScreen({ navigation }: Props) {
     setProgress(0);
 
     try {
+      console.log('first')
       // Step 1: Uploading (fast)
       setCurrentStep("uploading");
       setProgress(0.2);
@@ -153,11 +154,14 @@ export default function HomeScreen({ navigation }: Props) {
       setCurrentStep("fetching_prices");
       setProgress(0.9);
 
+      console.log('second')
       // Make the actual API call
       const analysis = await ApiService.analyzeItem(
         selectedImage || undefined,
         textInput
       );
+
+      console.log('done')
 
       // Complete
       setCurrentStep("complete");

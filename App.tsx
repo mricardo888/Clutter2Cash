@@ -6,18 +6,34 @@ import AppNavigator from "./src/navigation/AppNavigator";
 import * as NavigationBar from "expo-navigation-bar";
 
 export default function App() {
-  useEffect(() => {
-    // Hide Android navigation bar
-    NavigationBar.setVisibilityAsync("hidden");
-    NavigationBar.setBackgroundColorAsync("#ffffff"); // optional: set background
-  }, []);
+    return (
+        <SafeAreaProvider>
+            <ThemeProvider>
+                <AppContent />
+            </ThemeProvider>
+        </SafeAreaProvider>
+    );
+}
 
-  return (
-    <ThemeProvider>
-      <SafeAreaProvider>
-        <AppNavigator />
-        <StatusBar style="auto" />
-      </SafeAreaProvider>
-    </ThemeProvider>
-  );
+function AppContent() {
+    useEffect(() => {
+        // Hide Android navigation bar for immersive experience
+        const setupNavigationBar = async () => {
+            try {
+                await NavigationBar.setVisibilityAsync("hidden");
+                await NavigationBar.setBehaviorAsync("inset-swipe");
+            } catch (error) {
+                console.log("Navigation bar setup error:", error);
+            }
+        };
+
+        setupNavigationBar();
+    }, []);
+
+    return (
+        <>
+            <AppNavigator />
+            <StatusBar style="auto" />
+        </>
+    );
 }

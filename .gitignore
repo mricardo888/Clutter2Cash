@@ -48,3 +48,4 @@ bower_components/
 .expo/
 .expo-shared/
 /backend/file/
+backend/env

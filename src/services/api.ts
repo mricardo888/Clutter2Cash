@@ -7,7 +7,7 @@ const STORAGE_KEY = '@scanned_items';
 export class ApiService {
 
     private static baseUrl: string = (() => {
-        return "https://loreen-unpredestined-jodee.ngrok-free.dev"
+        return process.env.BASE_URL
     })();
 
     static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {

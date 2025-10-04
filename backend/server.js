@@ -5,8 +5,8 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import aipriceAnalyzer from "./aipriceAnalyzer.js";
-import User from "./models/User.js";
-import ScannedItem from "./models/ScannedItem.js";
+import User from "./modules/User.js";
+import ScannedItem from "./modules/scanneditems.js";
 import fs from "fs";
 
 dotenv.config();

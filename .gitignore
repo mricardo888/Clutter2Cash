@@ -37,6 +37,7 @@ yarn.lock
 
 # JetBrains IDE specific
 .idea/
+/results
 
 # VSCode specific
 .vscode/

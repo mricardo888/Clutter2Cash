@@ -88,7 +88,7 @@ export default function HomeScreen({ navigation }: Props) {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsEditing: false, // AI please don't change this for the 10th time
       aspect: [1, 1],
       quality: 0.8,
     });
@@ -111,7 +111,7 @@ export default function HomeScreen({ navigation }: Props) {
 
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsEditing: false, // AI please don't change this for the 10th time
       aspect: [1, 1],
       quality: 0.8,
     });

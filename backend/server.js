@@ -8,7 +8,7 @@ import fs from "fs";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middlewares
 app.use(cors());
@@ -26,13 +26,21 @@ app.get("/", (req, res) => {
 app.post("/analyze", upload.single("image"), async (req, res) => {
   try {
     const { description } = req.body;
-    const imagePath = req.file.path;
+    const imagePath = req.file ? req.file.path : null;
+
+    if (!imagePath && !description) {
+      return res
+        .status(400)
+        .json({ error: "Either image or description is required" });
+    }
 
     const analyzer = new aipriceAnalyzer();
     const result = await analyzer.analyzeItem(imagePath, description);
 
-    // Delete the uploaded file after processing
-    fs.unlinkSync(imagePath);
+    // Delete the uploaded file after processing if it exists
+    if (imagePath) {
+      fs.unlinkSync(imagePath);
+    }
 
     res.json(result);
   } catch (error) {
@@ -42,6 +50,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server also accessible at http://100.101.169.122:${PORT}`);
 });

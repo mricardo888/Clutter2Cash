@@ -10,12 +10,14 @@ import ResultsScreen from "../screens/ResultsScreen";
 import DashboardScreen from "../screens/DashboardScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { RootStackParamList, TabParamList } from "../types";
-import { theme } from "../utils/theme";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function TabNavigator() {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -35,10 +37,10 @@ function TabNavigator() {
           ) : null;
         },
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.disabled,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.disabled,
+          borderTopColor: theme.colors.border,
           paddingBottom: 5,
           paddingTop: 5,
           height: 60,
@@ -79,14 +81,16 @@ function TabNavigator() {
 }
 
 export default function AppNavigator() {
+  const { theme, paperTheme } = useTheme();
+
   return (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={paperTheme}>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
             headerStyle: {
               backgroundColor: theme.colors.surface,
-              borderBottomColor: theme.colors.disabled,
+              borderBottomColor: theme.colors.border,
             },
             headerTintColor: theme.colors.primary,
             headerTitleStyle: {

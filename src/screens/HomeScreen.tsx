@@ -20,7 +20,7 @@ import { Camera, Type, Leaf, Image as ImageIcon } from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, ScannedItem } from "../types";
 import { ApiService } from "../services/api";
-import { theme, spacing } from "../utils/theme";
+import { useTheme } from "../contexts/ThemeContext";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 
@@ -29,6 +29,7 @@ interface Props {
 }
 
 export default function HomeScreen({ navigation }: Props) {
+  const { theme } = useTheme();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [textInput, setTextInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -113,6 +114,8 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
+  const styles = createStyles(theme);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -175,6 +178,7 @@ export default function HomeScreen({ navigation }: Props) {
           <TextInput
             style={styles.textInput}
             placeholder="e.g., iPhone 11, MacBook Air, Samsung Galaxy..."
+            placeholderTextColor={theme.colors.placeholder}
             value={textInput}
             onChangeText={setTextInput}
             multiline
@@ -214,98 +218,101 @@ export default function HomeScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    padding: spacing.lg,
-    alignItems: "center",
-    backgroundColor: theme.colors.surface,
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: theme.colors.primary,
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: "center",
-    color: theme.colors.text,
-  },
-  card: {
-    margin: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: spacing.xs,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: theme.colors.placeholder,
-    marginBottom: spacing.md,
-  },
-  imageContainer: {
-    alignItems: "center",
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: theme.roundness,
-    marginBottom: spacing.md,
-  },
-  photoButtonsContainer: {
-    gap: spacing.md,
-  },
-  photoButton: {
-    marginTop: spacing.sm,
-  },
-  removeButton: {
-    marginTop: spacing.sm,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: theme.colors.disabled,
-    borderRadius: theme.roundness,
-    padding: spacing.md,
-    fontSize: 16,
-    minHeight: 100,
-    textAlignVertical: "top",
-  },
-  ecoCard: {
-    margin: spacing.md,
-    backgroundColor: "#E8F5E8",
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
-  },
-  ecoContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  ecoText: {
-    marginLeft: spacing.md,
-    flex: 1,
-  },
-  ecoTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: theme.colors.primary,
-    marginBottom: spacing.xs,
-  },
-  ecoDescription: {
-    fontSize: 14,
-    color: theme.colors.text,
-  },
-  analyzeButton: {
-    margin: spacing.lg,
-    marginTop: spacing.md,
-  },
-  analyzeButtonContent: {
-    paddingVertical: spacing.sm,
-  },
-});
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      padding: theme.spacing.lg,
+      alignItems: "center",
+      backgroundColor: theme.colors.surface,
+      marginBottom: theme.spacing.md,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: "bold",
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.sm,
+    },
+    subtitle: {
+      fontSize: 16,
+      textAlign: "center",
+      color: theme.colors.text,
+    },
+    card: {
+      margin: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+    },
+    cardTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      marginBottom: theme.spacing.xs,
+    },
+    cardDescription: {
+      fontSize: 14,
+      color: theme.colors.placeholder,
+      marginBottom: theme.spacing.md,
+    },
+    imageContainer: {
+      alignItems: "center",
+    },
+    image: {
+      width: 200,
+      height: 200,
+      borderRadius: 8,
+      marginBottom: theme.spacing.md,
+    },
+    photoButtonsContainer: {
+      gap: theme.spacing.md,
+    },
+    photoButton: {
+      marginTop: theme.spacing.sm,
+    },
+    removeButton: {
+      marginTop: theme.spacing.sm,
+    },
+    textInput: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 8,
+      padding: theme.spacing.md,
+      fontSize: 16,
+      minHeight: 100,
+      textAlignVertical: "top",
+      backgroundColor: theme.colors.card,
+      color: theme.colors.text,
+    },
+    ecoCard: {
+      margin: theme.spacing.md,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.primary,
+      borderWidth: 1,
+    },
+    ecoContent: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    ecoText: {
+      marginLeft: theme.spacing.md,
+      flex: 1,
+    },
+    ecoTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.xs,
+    },
+    ecoDescription: {
+      fontSize: 14,
+      color: theme.colors.text,
+    },
+    analyzeButton: {
+      margin: theme.spacing.lg,
+      marginTop: theme.spacing.md,
+    },
+    analyzeButtonContent: {
+      paddingVertical: theme.spacing.sm,
+    },
+  });

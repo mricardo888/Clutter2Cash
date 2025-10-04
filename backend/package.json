@@ -2,11 +2,28 @@
   "name": "clutter2cash-backend",
   "version": "1.0.0",
   "type": "module",
+  "description": "Backend API for Clutter2Cash price analysis",
+  "main": "server.js",
   "scripts": {
-    "analyze": "node example.js"
+    "start": "node server.js",
+    "analyze": "node example.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "@google/genai": "^0.3.0",
-    "dotenv": "^16.4.5"
-  }
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "gemini",
+    "price-analysis",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT"
 }

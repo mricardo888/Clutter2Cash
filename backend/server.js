@@ -41,61 +41,118 @@ app.use(express.json());
 
 const upload = multer({ dest: "uploads/" });
 
-// --- JWT Authentication Middleware (Required) ---
-async function authenticate(req, res, next) {
-    try {
-        const token = req.headers.authorization;
-        console.log('bearer test', token)
+// --- Guest Account Management ---
+const GUEST_SESSION_DURATION = '7d';
 
-        if (!token) return res.status(401).json({ error: "No token provided" });
-        console.log('first', process.env.JWT_SECRET)
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        console.log('check user', decoded)
-        const user = await User.findById(decoded.id);
-
-        console.log('check user')
-        if (!user) return res.status(403).json({ error: "Invalid token" });
-
-        req.user = user;
-        next();
-    } catch (error) {
-        console.log('banned')
-        res.status(403).json({ error: "Invalid token" });
-        console.log('hello')
-    }
+function createGuestToken() {
+    const guestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return jwt.sign(
+        { id: guestId, isGuest: true },
+        process.env.JWT_SECRET,
+        { expiresIn: GUEST_SESSION_DURATION }
+    );
 }
 
-// --- Optional Authentication Middleware ---
-async function optionalAuth(req, res, next) {
+// --- Authentication Middleware (Always authenticates, creates guest if needed) ---
+async function authenticate(req, res, next) {
     try {
         const token = req.headers.authorization;
 
         if (!token) {
-            // No token provided - continue as guest
-            req.user = null;
+            // No token - create guest session
+            const guestToken = createGuestToken();
+            req.user = {
+                isGuest: true,
+                id: jwt.decode(guestToken).id,
+                name: "Guest User",
+                email: null,
+                badges: []
+            };
+            req.guestToken = guestToken; // Send back to client
             return next();
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id);
 
-        if (user) {
-            req.user = user;
-        } else {
-            req.user = null;
+        // Check if it's a guest token
+        if (decoded.isGuest) {
+            req.user = {
+                isGuest: true,
+                id: decoded.id,
+                name: "Guest User",
+                email: null,
+                badges: []
+            };
+            return next();
         }
 
+        // It's a registered user token
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            // Invalid user token - convert to guest
+            const guestToken = createGuestToken();
+            req.user = {
+                isGuest: true,
+                id: jwt.decode(guestToken).id,
+                name: "Guest User",
+                email: null,
+                badges: []
+            };
+            req.guestToken = guestToken;
+            return next();
+        }
+
+        req.user = {
+            isGuest: false,
+            ...user.toObject()
+        };
         next();
     } catch (error) {
-        // Invalid token - continue as guest
-        req.user = null;
+        // Invalid token - create guest session
+        const guestToken = createGuestToken();
+        req.user = {
+            isGuest: true,
+            id: jwt.decode(guestToken).id,
+            name: "Guest User",
+            email: null,
+            badges: []
+        };
+        req.guestToken = guestToken;
         next();
     }
 }
 
+// --- Middleware that requires registered user (blocks guests) ---
+function requireRegisteredUser(req, res, next) {
+    if (req.user.isGuest) {
+        return res.status(403).json({
+            error: "This feature requires an account",
+            requiresAuth: true,
+            message: "Please sign up or log in to access this feature"
+        });
+    }
+    next();
+}
+
 // --- AUTH ROUTES ---
+
+// Get or create guest session
+app.post("/guest", (req, res) => {
+    const guestToken = createGuestToken();
+    const decoded = jwt.decode(guestToken);
+
+    res.json({
+        token: guestToken,
+        user: {
+            id: decoded.id,
+            name: "Guest User",
+            email: null,
+            isGuest: true,
+            badges: []
+        },
+        message: "Guest session created"
+    });
+});
 
 // Register route
 app.post("/register", async (req, res) => {
@@ -123,6 +180,7 @@ app.post("/register", async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                isGuest: false,
                 badges: user.badges
             }
         });
@@ -150,6 +208,7 @@ app.post("/login", async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                isGuest: false,
                 badges: user.badges
             }
         });
@@ -158,15 +217,15 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// --- ANALYZE ROUTE (Works with or without auth) ---
-app.post("/analyze", optionalAuth, upload.single("image"), async (req, res) => {
+// --- ANALYZE ROUTE (Works for both guests and registered users) ---
+app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
     let imagePath = null;
 
     try {
         const { description } = req.body;
 
         console.log("🔥 Received request:");
-        console.log("- User:", req.user ? req.user.email : "Guest");
+        console.log("- User:", req.user.isGuest ? "Guest" : req.user.email);
         console.log("- File:", req.file ? "Yes" : "No");
         console.log("- Description:", description || "None");
 
@@ -181,60 +240,122 @@ app.post("/analyze", optionalAuth, upload.single("image"), async (req, res) => {
         const result = await analyzer.analyzeItem(imagePath, description);
         console.log("✅ Analysis complete:", result);
 
-        // Only save to database if user is logged in
-        if (req.user) {
-            const scannedItem = new ScannedItem({
-                userId: req.user._id,
-                itemName: result.itemInfo?.itemName || "Unknown Item",
-                description: result.itemInfo?.description || description,
-                category: result.itemInfo?.category || 'Other',
-                estimatedValue: parseFloat(result.currentSellingPrice?.average) || 0,
-                condition: result.itemInfo?.condition || 'Good',
-                ecoImpact: {
-                    co2SavedKg: parseFloat(result.environmentalImpact?.co2SavedKg) || 0,
-                    description: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`
-                },
-                confidence: result.prediction?.confidence || "medium",
-                priceAnalysis: {
-                    currentAverage: parseFloat(result.currentSellingPrice?.average) || 0,
-                    priceRange: {
-                        min: parseFloat(result.currentSellingPrice?.min) || 0,
-                        max: parseFloat(result.currentSellingPrice?.max) || 0
-                    },
-                    marketTrend: result.marketTrend || 'stable'
-                },
-                fullAnalysis: result
-            });
+        // Validate and normalize category
+        const validCategories = [
+            'Electronics', 'Furniture', 'Clothing', 'Books', 'Toys', 'Home Decor', 'Sports', 'Other'
+        ];
 
-            await scannedItem.save();
+        let category = result.itemInfo?.category || 'Other';
+        if (!validCategories.includes(category)) {
+            // Try to map common variations
+            const categoryMap = {
+                'technology': 'Electronics',
+                'tech': 'Electronics',
+                'computer': 'Electronics',
+                'phone': 'Electronics',
+                'clothes': 'Clothing',
+                'apparel': 'Clothing',
+                'fashion': 'Clothing',
+                'book': 'Books',
+                'toy': 'Toys',
+                'game': 'Toys',
+                'sport': 'Sports',
+                'fitness': 'Sports',
+                'home': 'Home Decor',
+                'decor': 'Home Decor',
+                'furniture': 'Furniture'
+            };
 
-            console.log("📤 Sending response (saved to DB)");
-            res.json({
-                id: scannedItem._id,
-                item: scannedItem.itemName,
-                value: scannedItem.estimatedValue,
-                ecoImpact: scannedItem.ecoImpact.description,
-                confidence: scannedItem.confidence,
-                category: scannedItem.category,
-                timestamp: scannedItem.createdAt,
-                saved: true
-            });
-        } else {
-            // Guest mode - return analysis without saving
-            console.log("📤 Sending response (guest mode - not saved)");
-            res.json({
-                id: null,
-                item: result.itemInfo?.itemName || "Unknown Item",
-                value: parseFloat(result.currentSellingPrice?.average) || 0,
-                ecoImpact: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`,
-                confidence: result.prediction?.confidence || "medium",
-                category: result.itemInfo?.category || 'Other',
-                timestamp: new Date(),
-                saved: false,
-                guestMode: true,
-                message: "Sign in to save your scanned items"
-            });
+            const lowerCategory = category.toLowerCase();
+            category = categoryMap[lowerCategory] || 'Other';
         }
+
+        // Validate and normalize condition
+        const validConditions = ['New', 'Like New', 'Good', 'Fair', 'Poor'];
+        let condition = result.itemInfo?.condition || 'Good';
+
+        if (!validConditions.includes(condition)) {
+            // Try to map common variations
+            const conditionMap = {
+                'brand new': 'New',
+                'mint': 'Like New',
+                'excellent': 'Like New',
+                'very good': 'Good',
+                'used': 'Good',
+                'acceptable': 'Fair',
+                'worn': 'Fair',
+                'damaged': 'Poor',
+                'broken': 'Poor'
+            };
+
+            const lowerCondition = condition.toLowerCase();
+            condition = conditionMap[lowerCondition] || 'Good';
+        }
+
+        // Validate and normalize confidence
+        const validConfidence = ['high', 'medium', 'low'];
+        let confidence = (result.prediction?.confidence || 'medium').toLowerCase();
+        if (!validConfidence.includes(confidence)) {
+            confidence = 'medium';
+        }
+
+        // Validate and normalize market trend
+        const validTrends = ['rising', 'stable', 'falling'];
+        let marketTrend = (result.marketTrend || 'stable').toLowerCase();
+        if (!validTrends.includes(marketTrend)) {
+            // Map common variations
+            if (marketTrend === 'declining') marketTrend = 'falling';
+            else marketTrend = 'stable';
+        }
+
+        const scannedItem = new ScannedItem({
+            userId: req.user.id.toString(), // Ensure it's a string
+            isGuestItem: req.user.isGuest,
+            itemName: result.itemInfo?.itemName || "Unknown Item",
+            description: result.itemInfo?.description || description,
+            category: category,
+            estimatedValue: parseFloat(result.currentSellingPrice?.average) || 0,
+            condition: condition,
+            ecoImpact: {
+                co2SavedKg: parseFloat(result.environmentalImpact?.co2SavedKg) || 0,
+                description: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`
+            },
+            confidence: confidence,
+            priceAnalysis: {
+                currentAverage: parseFloat(result.currentSellingPrice?.average) || 0,
+                priceRange: {
+                    min: parseFloat(result.currentSellingPrice?.min) || 0,
+                    max: parseFloat(result.currentSellingPrice?.max) || 0
+                },
+                marketTrend: marketTrend
+            },
+            fullAnalysis: result
+        });
+
+        await scannedItem.save();
+
+        console.log("📤 Sending response (saved to DB)");
+        const response = {
+            id: scannedItem._id,
+            item: scannedItem.itemName,
+            value: scannedItem.estimatedValue,
+            ecoImpact: scannedItem.ecoImpact.description,
+            confidence: scannedItem.confidence,
+            category: scannedItem.category,
+            timestamp: scannedItem.createdAt,
+            saved: true,
+            isGuest: req.user.isGuest
+        };
+
+        // If guest token was created, send it back
+        if (req.guestToken) {
+            response.guestToken = req.guestToken;
+            response.message = "Guest session created. Sign up to keep your items permanently!";
+        } else if (req.user.isGuest) {
+            response.message = "Saved to guest session. Sign up to keep your items permanently!";
+        }
+
+        res.json(response);
     } catch (error) {
         console.error("❌ Analysis error:", error);
         res.status(500).json({ error: error.message, details: error.stack });
@@ -250,16 +371,20 @@ app.post("/analyze", optionalAuth, upload.single("image"), async (req, res) => {
     }
 });
 
-// --- GET SCANNED ITEMS ROUTES (Require authentication) ---
+// --- GET SCANNED ITEMS ROUTES (Work for both guests and registered users) ---
 
-// Get all scanned items for user
+// Get all scanned items for user (including guests)
 app.get("/scanned-items", authenticate, async (req, res) => {
     try {
-        const items = await ScannedItem.find({ userId: req.user._id })
+        const items = await ScannedItem.find({ userId: req.user.id })
             .sort({ createdAt: -1 })
             .select('-fullAnalysis'); // Exclude heavy data
 
-        res.json(items);
+        res.json({
+            items,
+            isGuest: req.user.isGuest,
+            message: req.user.isGuest ? "Sign up to keep your items permanently" : null
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -270,7 +395,7 @@ app.get("/scanned-items/:id", authenticate, async (req, res) => {
     try {
         const item = await ScannedItem.findOne({
             _id: req.params.id,
-            userId: req.user._id
+            userId: req.user.id
         });
 
         if (!item) {
@@ -287,7 +412,7 @@ app.get("/scanned-items/:id", authenticate, async (req, res) => {
 app.get("/scanned-items/category/:category", authenticate, async (req, res) => {
     try {
         const items = await ScannedItem.find({
-            userId: req.user._id,
+            userId: req.user.id,
             category: req.params.category
         }).sort({ createdAt: -1 });
 
@@ -302,7 +427,7 @@ app.put("/scanned-items/:id", authenticate, async (req, res) => {
     try {
         const item = await ScannedItem.findOne({
             _id: req.params.id,
-            userId: req.user._id
+            userId: req.user.id
         });
 
         if (!item) {
@@ -329,7 +454,7 @@ app.delete("/scanned-items/:id", authenticate, async (req, res) => {
     try {
         const item = await ScannedItem.findOneAndDelete({
             _id: req.params.id,
-            userId: req.user._id
+            userId: req.user.id
         });
 
         if (!item) {
@@ -348,7 +473,7 @@ app.post("/scanned-items/:id/list", authenticate, async (req, res) => {
         const { price, platform, url } = req.body;
         const item = await ScannedItem.findOne({
             _id: req.params.id,
-            userId: req.user._id
+            userId: req.user.id
         });
 
         if (!item) {
@@ -368,7 +493,7 @@ app.post("/scanned-items/:id/sold", authenticate, async (req, res) => {
         const { soldPrice } = req.body;
         const item = await ScannedItem.findOne({
             _id: req.params.id,
-            userId: req.user._id
+            userId: req.user.id
         });
 
         if (!item) {
@@ -382,20 +507,21 @@ app.post("/scanned-items/:id/sold", authenticate, async (req, res) => {
     }
 });
 
-// --- USER STATS ROUTES (Require authentication) ---
+// --- USER STATS ROUTES (Work for guests, but some features require registration) ---
 
 // Get user profile with stats
 app.get("/profile", authenticate, async (req, res) => {
     try {
-        console.log('does anything work?', req.user._id)
-        const stats = await ScannedItem.getUserTotalValue(req.user._id);
-        const categoryBreakdown = await ScannedItem.getUserItemsByCategory(req.user._id);
+        // Guests can see their stats but should be prompted to sign up
+        const stats = await ScannedItem.getUserTotalValue(req.user.id);
+        const categoryBreakdown = await ScannedItem.getUserItemsByCategory(req.user.id);
 
         res.json({
             user: {
-                id: req.user._id,
+                id: req.user.id,
                 name: req.user.name,
                 email: req.user.email,
+                isGuest: req.user.isGuest,
                 badges: req.user.badges
             },
             stats: {
@@ -403,7 +529,8 @@ app.get("/profile", authenticate, async (req, res) => {
                 totalValue: stats.totalValue,
                 totalCO2Saved: stats.totalCO2Saved,
                 categoryBreakdown
-            }
+            },
+            message: req.user.isGuest ? "Sign up to keep your data permanently and unlock all features!" : null
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -413,19 +540,67 @@ app.get("/profile", authenticate, async (req, res) => {
 // Get dashboard stats
 app.get("/dashboard", authenticate, async (req, res) => {
     try {
-        const stats = await ScannedItem.getUserTotalValue(req.user._id);
-        const recentScans = await ScannedItem.getRecentScans(req.user._id, 5);
-        const categoryBreakdown = await ScannedItem.getUserItemsByCategory(req.user._id);
+        const stats = await ScannedItem.getUserTotalValue(req.user.id);
+        const recentScans = await ScannedItem.getRecentScans(req.user.id, 5);
+        const categoryBreakdown = await ScannedItem.getUserItemsByCategory(req.user.id);
 
         res.json({
             totalValue: stats.totalValue,
             totalItems: stats.itemCount,
             totalCO2Saved: stats.totalCO2Saved,
             recentScans,
-            categoryBreakdown
+            categoryBreakdown,
+            isGuest: req.user.isGuest
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// Convert guest account to registered account
+app.post("/convert-guest", authenticate, async (req, res) => {
+    try {
+        if (!req.user.isGuest) {
+            return res.status(400).json({ error: "Already a registered user" });
+        }
+
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: "Email already registered" });
+        }
+
+        // Create new user
+        const user = new User({ name, email, password });
+        await user.save();
+
+        // Transfer all guest items to the new user
+        await ScannedItem.updateMany(
+            { userId: req.user.id, isGuestItem: true },
+            { userId: user._id.toString(), isGuestItem: false }
+        );
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+        res.json({
+            message: "Account created and guest data transferred successfully!",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isGuest: false,
+                badges: user.badges
+            },
+            itemsTransferred: await ScannedItem.countDocuments({ userId: user._id })
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

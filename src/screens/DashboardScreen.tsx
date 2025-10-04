@@ -5,7 +5,9 @@ import {
     FlatList,
     Image,
     RefreshControl,
+    StatusBar,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
     Card,
     Title,
@@ -41,6 +43,7 @@ interface Props {
 
 export default function DashboardScreen({ navigation }: Props) {
     const { theme } = useTheme();
+    const insets = useSafeAreaInsets();
     const [items, setItems] = useState<ScannedItem[]>([]);
     const [stats, setStats] = useState<UserStats>({
         totalValueUnlocked: 0,
@@ -209,60 +212,75 @@ export default function DashboardScreen({ navigation }: Props) {
         </Card>
     );
 
-    const styles = createStyles(theme);
+    const styles = createStyles(theme, insets);
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
-                <Text style={styles.loadingText}>Loading your history...</Text>
-            </View>
+            <>
+                <StatusBar
+                    barStyle={theme.mode === "dark" ? "light-content" : "dark-content"}
+                    backgroundColor={theme.colors.background}
+                />
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={theme.colors.primary} />
+                    <Text style={styles.loadingText}>Loading your history...</Text>
+                </View>
+            </>
         );
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Title style={styles.title}>📊 Your Dashboard</Title>
-                <Paragraph style={styles.subtitle}>
-                    Track your decluttering journey and environmental impact
-                </Paragraph>
+        <>
+            <StatusBar
+                barStyle={theme.mode === "dark" ? "light-content" : "dark-content"}
+                backgroundColor={theme.colors.surface}
+            />
+            <View style={styles.container}>
+                <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+                    <Title style={styles.title}>📊 Your Dashboard</Title>
+                    <Paragraph style={styles.subtitle}>
+                        Track your decluttering journey and environmental impact
+                    </Paragraph>
+                </View>
+
+                <FlatList
+                    data={items}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    ListHeaderComponent={renderStats}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                    contentContainerStyle={[
+                        styles.listContainer,
+                        { paddingBottom: insets.bottom + 80 } // Account for FAB
+                    ]}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={
+                        <Card style={styles.emptyCard}>
+                            <Card.Content style={styles.emptyContent}>
+                                <Package size={48} color={theme.colors.disabled} />
+                                <Title style={styles.emptyTitle}>No Items Yet</Title>
+                                <Paragraph style={styles.emptyDescription}>
+                                    Start scanning items to see your history and impact here!
+                                </Paragraph>
+                            </Card.Content>
+                        </Card>
+                    }
+                />
+
+                <FAB
+                    style={[styles.fab, { bottom: insets.bottom + 76 }]}
+                    icon="plus"
+                    label="Scan Item"
+                    onPress={() => navigation.navigate("Home")}
+                />
             </View>
-
-            <FlatList
-                data={items}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                ListHeaderComponent={renderStats}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-                contentContainerStyle={styles.listContainer}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                    <Card style={styles.emptyCard}>
-                        <Card.Content style={styles.emptyContent}>
-                            <Package size={48} color={theme.colors.disabled} />
-                            <Title style={styles.emptyTitle}>No Items Yet</Title>
-                            <Paragraph style={styles.emptyDescription}>
-                                Start scanning items to see your history and impact here!
-                            </Paragraph>
-                        </Card.Content>
-                    </Card>
-                }
-            />
-
-            <FAB
-                style={styles.fab}
-                icon="plus"
-                label="Scan Item"
-                onPress={() => navigation.navigate("Home")}
-            />
-        </View>
+        </>
     );
 }
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: any, insets: any) =>
     StyleSheet.create({
         container: {
             flex: 1,
@@ -273,6 +291,7 @@ const createStyles = (theme: any) =>
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: theme.colors.background,
+            paddingTop: insets.top,
         },
         loadingText: {
             marginTop: 16,
@@ -424,7 +443,6 @@ const createStyles = (theme: any) =>
             position: "absolute",
             margin: 16,
             right: 0,
-            bottom: 0,
             backgroundColor: theme.colors.primary,
         },
     });

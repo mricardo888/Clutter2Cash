@@ -60,15 +60,26 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
             });
         }
 
-        imagePath = req.file?.path;
+        // IMPORTANT: aipriceAnalyzer REQUIRES an image path
+        // If no image provided, we need to handle text-only differently
+        if (!req.file) {
+            return res.status(400).json({
+                error: "Image is required. The analyzer cannot process text-only descriptions yet."
+            });
+        }
+
+        imagePath = req.file.path;
 
         console.log("🔍 Analyzing item...");
         const analyzer = new aipriceAnalyzer();
-        const result = await analyzer.analyzeItem(imagePath, description);
 
-        console.log("✅ Analysis complete:", result);
+        // Call analyzeItem with imagePath and optional description
+        const result = await analyzer.analyzeItem(imagePath, description || null);
 
-        // Return the full result directly - let frontend handle the structure
+        console.log("✅ Analysis complete");
+        console.log("📦 Result structure:", Object.keys(result));
+
+        // Return the full result directly
         res.json(result);
 
     } catch (error) {
@@ -76,7 +87,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
         console.error("Stack trace:", error.stack);
         res.status(500).json({
             error: error.message,
-            details: error.stack
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     } finally {
         // Clean up uploaded file if it exists

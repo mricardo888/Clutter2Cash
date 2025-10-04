@@ -270,7 +270,7 @@ export default function DashboardScreen({ navigation }: Props) {
                 />
 
                 <FAB
-                    style={[styles.fab, { bottom: insets.bottom + 16 }]}
+                    style={[styles.fab, { bottom: insets.bottom + 76 }]}
                     icon="plus"
                     label="Scan Item"
                     onPress={() => navigation.navigate("Home")}

@@ -196,7 +196,7 @@ export default function HomeScreen({ navigation }: Props) {
             />
             <ScrollView
                 style={styles.container}
-                contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+                contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}
             >
                 <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
                     <View style={styles.titleContainer}>

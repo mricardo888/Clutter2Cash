@@ -49,7 +49,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     try {
         const { description } = req.body;
 
-        console.log("📥 Received request:");
+        console.log("🔥 Received request:");
         console.log("- File:", req.file ? "Yes" : "No");
         console.log("- Description:", description || "None");
 
@@ -68,18 +68,9 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 
         console.log("✅ Analysis complete:", result);
 
-        // Transform the complex result to match frontend expectations
-        const transformedResult = {
-            item: result.itemInfo?.itemName || "Unknown Item",
-            value: parseFloat(result.currentSellingPrice?.average) || 0,
-            ecoImpact: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`,
-            confidence: result.prediction?.confidence || "medium",
-            // Include full data for potential future use
-            fullAnalysis: result
-        };
+        // Return the full result directly - let frontend handle the structure
+        res.json(result);
 
-        console.log("📤 Sending transformed response:", transformedResult);
-        res.json(transformedResult);
     } catch (error) {
         console.error("❌ Analysis error:", error);
         console.error("Stack trace:", error.stack);
@@ -92,7 +83,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
         if (imagePath && fs.existsSync(imagePath)) {
             try {
                 fs.unlinkSync(imagePath);
-                console.log("🗑️  Cleaned up file:", imagePath);
+                console.log("🗑️ Cleaned up file:", imagePath);
             } catch (cleanupError) {
                 console.error("Error cleaning up file:", cleanupError);
             }

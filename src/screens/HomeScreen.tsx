@@ -16,11 +16,18 @@ import {
   Text,
 } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Type, Leaf, Image as ImageIcon } from "lucide-react-native";
+import {
+  Camera,
+  Type,
+  Leaf,
+  Image as ImageIcon,
+  Sparkles,
+  DollarSign,
+} from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, ScannedItem } from "../types";
 import { ApiService } from "../services/api";
-import { theme, spacing } from "../utils/theme";
+import { useTheme } from "../contexts/ThemeContext";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 
@@ -29,6 +36,7 @@ interface Props {
 }
 
 export default function HomeScreen({ navigation }: Props) {
+  const { theme } = useTheme();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [textInput, setTextInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -113,18 +121,26 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
+  const styles = createStyles(theme);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Title style={styles.title}>🌱 Clutter2Cash</Title>
+        <View style={styles.titleContainer}>
+          <Leaf size={32} color={theme.colors.primary} />
+          <Title style={styles.title}>Clutter2Cash</Title>
+        </View>
         <Paragraph style={styles.subtitle}>
-          Turn your unused items into cash while saving the planet!
+          Turn your unused items into cash while saving the planet
         </Paragraph>
       </View>
 
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.cardTitle}>📸 Upload Photo</Title>
+          <View style={styles.cardHeader}>
+            <Camera size={24} color={theme.colors.primary} />
+            <Title style={styles.cardTitle}>Upload Photo</Title>
+          </View>
           <Paragraph style={styles.cardDescription}>
             Take or select a photo of your item for AI analysis
           </Paragraph>
@@ -167,7 +183,10 @@ export default function HomeScreen({ navigation }: Props) {
 
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.cardTitle}>⌨️ Enter Item Details</Title>
+          <View style={styles.cardHeader}>
+            <Type size={24} color={theme.colors.primary} />
+            <Title style={styles.cardTitle}>Enter Item Details</Title>
+          </View>
           <Paragraph style={styles.cardDescription}>
             Or type the brand and model of your item
           </Paragraph>
@@ -175,6 +194,7 @@ export default function HomeScreen({ navigation }: Props) {
           <TextInput
             style={styles.textInput}
             placeholder="e.g., iPhone 11, MacBook Air, Samsung Galaxy..."
+            placeholderTextColor={theme.colors.placeholder}
             value={textInput}
             onChangeText={setTextInput}
             multiline
@@ -187,7 +207,7 @@ export default function HomeScreen({ navigation }: Props) {
           <View style={styles.ecoContent}>
             <Leaf size={24} color={theme.colors.primary} />
             <View style={styles.ecoText}>
-              <Text style={styles.ecoTitle}>🌍 Eco Impact</Text>
+              <Text style={styles.ecoTitle}>Eco Impact</Text>
               <Text style={styles.ecoDescription}>
                 Every item you sell, donate, or recycle helps reduce waste and
                 saves precious resources!
@@ -203,6 +223,7 @@ export default function HomeScreen({ navigation }: Props) {
         disabled={isAnalyzing || (!selectedImage && !textInput.trim())}
         style={styles.analyzeButton}
         contentStyle={styles.analyzeButtonContent}
+        icon={() => (isAnalyzing ? null : <Sparkles size={20} color="white" />)}
       >
         {isAnalyzing ? (
           <ActivityIndicator size="small" color="white" />
@@ -214,98 +235,116 @@ export default function HomeScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    padding: spacing.lg,
-    alignItems: "center",
-    backgroundColor: theme.colors.surface,
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: theme.colors.primary,
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: "center",
-    color: theme.colors.text,
-  },
-  card: {
-    margin: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: spacing.xs,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: theme.colors.placeholder,
-    marginBottom: spacing.md,
-  },
-  imageContainer: {
-    alignItems: "center",
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: theme.roundness,
-    marginBottom: spacing.md,
-  },
-  photoButtonsContainer: {
-    gap: spacing.md,
-  },
-  photoButton: {
-    marginTop: spacing.sm,
-  },
-  removeButton: {
-    marginTop: spacing.sm,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: theme.colors.disabled,
-    borderRadius: theme.roundness,
-    padding: spacing.md,
-    fontSize: 16,
-    minHeight: 100,
-    textAlignVertical: "top",
-  },
-  ecoCard: {
-    margin: spacing.md,
-    backgroundColor: "#E8F5E8",
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
-  },
-  ecoContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  ecoText: {
-    marginLeft: spacing.md,
-    flex: 1,
-  },
-  ecoTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: theme.colors.primary,
-    marginBottom: spacing.xs,
-  },
-  ecoDescription: {
-    fontSize: 14,
-    color: theme.colors.text,
-  },
-  analyzeButton: {
-    margin: spacing.lg,
-    marginTop: spacing.md,
-  },
-  analyzeButtonContent: {
-    paddingVertical: spacing.sm,
-  },
-});
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      padding: theme.spacing.lg,
+      alignItems: "center",
+      backgroundColor: theme.colors.surface,
+      marginBottom: theme.spacing.md,
+    },
+    titleContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: theme.colors.primary,
+      letterSpacing: -0.5,
+    },
+    subtitle: {
+      fontSize: 16,
+      textAlign: "center",
+      color: theme.colors.textSecondary,
+      lineHeight: 24,
+    },
+    card: {
+      margin: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+    },
+    cardHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.xs,
+    },
+    cardTitle: {
+      fontSize: 20,
+      fontWeight: "600",
+      color: theme.colors.text,
+    },
+    cardDescription: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginBottom: theme.spacing.md,
+      lineHeight: 20,
+    },
+    imageContainer: {
+      alignItems: "center",
+    },
+    image: {
+      width: 200,
+      height: 200,
+      borderRadius: 8,
+      marginBottom: theme.spacing.md,
+    },
+    photoButtonsContainer: {
+      gap: theme.spacing.md,
+    },
+    photoButton: {
+      marginTop: theme.spacing.sm,
+    },
+    removeButton: {
+      marginTop: theme.spacing.sm,
+    },
+    textInput: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 8,
+      padding: theme.spacing.md,
+      fontSize: 16,
+      minHeight: 100,
+      textAlignVertical: "top",
+      backgroundColor: theme.colors.card,
+      color: theme.colors.text,
+    },
+    ecoCard: {
+      margin: theme.spacing.md,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.primary,
+      borderWidth: 1,
+    },
+    ecoContent: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    ecoText: {
+      marginLeft: theme.spacing.md,
+      flex: 1,
+    },
+    ecoTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.xs,
+    },
+    ecoDescription: {
+      fontSize: 14,
+      color: theme.colors.text,
+    },
+    analyzeButton: {
+      margin: theme.spacing.lg,
+      marginTop: theme.spacing.md,
+    },
+    analyzeButtonContent: {
+      paddingVertical: theme.spacing.sm,
+      gap: theme.spacing.sm,
+    },
+  });

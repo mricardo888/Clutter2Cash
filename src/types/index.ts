@@ -6,7 +6,7 @@ export interface ScannedItem {
   imageUri?: string;
   brand?: string;
   model?: string;
-  action?: 'sell' | 'donate' | 'recycle';
+  action?: "sell" | "donate" | "recycle";
   timestamp: Date;
 }
 

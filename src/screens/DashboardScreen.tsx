@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   FlatList,
   Image,
   RefreshControl,
-} from 'react-native';
+} from "react-native";
 import {
   Card,
   Title,
@@ -14,32 +14,39 @@ import {
   FAB,
   Chip,
   ActivityIndicator,
-} from 'react-native-paper';
+} from "react-native-paper";
 import {
   DollarSign,
   Leaf,
   Package,
   TrendingUp,
   Calendar,
-} from 'lucide-react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList, ScannedItem, UserStats } from '../types';
-import { ApiService } from '../services/api';
-import { theme, spacing } from '../utils/theme';
+  BarChart3,
+  Target,
+  Clock,
+} from "lucide-react-native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList, ScannedItem, UserStats } from "../types";
+import { ApiService } from "../services/api";
+import { useTheme } from "../contexts/ThemeContext";
 
-type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Dashboard'>;
+type DashboardScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "Dashboard"
+>;
 
 interface Props {
   navigation: DashboardScreenNavigationProp;
 }
 
 export default function DashboardScreen({ navigation }: Props) {
+  const { theme } = useTheme();
   const [items, setItems] = useState<ScannedItem[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalValueUnlocked: 0,
-    totalCO2Saved: '0kg',
+    totalCO2Saved: "0kg",
     itemsScanned: 0,
-    badges: ['Declutter Rookie'],
+    badges: ["Declutter Rookie"],
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,22 +55,25 @@ export default function DashboardScreen({ navigation }: Props) {
     try {
       const history = await ApiService.getHistory();
       setItems(history);
-      
+
       // Calculate stats
       const totalValue = history.reduce((sum, item) => sum + item.value, 0);
       const totalCO2 = history.reduce((sum, item) => {
         const co2Match = item.ecoImpact.match(/(\d+)kg/);
         return sum + (co2Match ? parseInt(co2Match[1]) : 0);
       }, 0);
-      
+
       setStats({
         totalValueUnlocked: totalValue,
         totalCO2Saved: `${totalCO2}kg`,
         itemsScanned: history.length,
-        badges: history.length >= 5 ? ['Eco Hero', 'Declutter Champion'] : ['Declutter Rookie'],
+        badges:
+          history.length >= 5
+            ? ["Eco Hero", "Declutter Champion"]
+            : ["Declutter Rookie"],
       });
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error("Error loading data:", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -81,11 +91,11 @@ export default function DashboardScreen({ navigation }: Props) {
 
   const getActionColor = (action?: string) => {
     switch (action) {
-      case 'sell':
+      case "sell":
         return theme.colors.success;
-      case 'donate':
-        return '#E91E63';
-      case 'recycle':
+      case "donate":
+        return "#E91E63";
+      case "recycle":
         return theme.colors.primary;
       default:
         return theme.colors.disabled;
@@ -94,11 +104,11 @@ export default function DashboardScreen({ navigation }: Props) {
 
   const getActionIcon = (action?: string) => {
     switch (action) {
-      case 'sell':
+      case "sell":
         return <DollarSign size={16} color="white" />;
-      case 'donate':
+      case "donate":
         return <Package size={16} color="white" />;
-      case 'recycle':
+      case "recycle":
         return <Leaf size={16} color="white" />;
       default:
         return <Package size={16} color="white" />;
@@ -106,10 +116,10 @@ export default function DashboardScreen({ navigation }: Props) {
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     }).format(new Date(date));
   };
 
@@ -120,12 +130,16 @@ export default function DashboardScreen({ navigation }: Props) {
           <View style={styles.itemInfo}>
             <Title style={styles.itemName}>{item.name}</Title>
             <Text style={styles.itemDate}>
-              <Calendar size={14} color={theme.colors.placeholder} /> {formatDate(item.timestamp)}
+              <Clock size={14} color={theme.colors.placeholder} />{" "}
+              {formatDate(item.timestamp)}
             </Text>
           </View>
           {item.action && (
             <Chip
-              style={[styles.actionChip, { backgroundColor: getActionColor(item.action) }]}
+              style={[
+                styles.actionChip,
+                { backgroundColor: getActionColor(item.action) },
+              ]}
               textStyle={styles.actionChipText}
               icon={() => getActionIcon(item.action)}
             >
@@ -133,7 +147,7 @@ export default function DashboardScreen({ navigation }: Props) {
             </Chip>
           )}
         </View>
-        
+
         <View style={styles.itemDetails}>
           <View style={styles.itemStat}>
             <DollarSign size={16} color={theme.colors.success} />
@@ -144,7 +158,7 @@ export default function DashboardScreen({ navigation }: Props) {
             <Text style={styles.itemStatText}>{item.ecoImpact}</Text>
           </View>
         </View>
-        
+
         {item.imageUri && (
           <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
         )}
@@ -156,32 +170,36 @@ export default function DashboardScreen({ navigation }: Props) {
     <Card style={styles.statsCard}>
       <Card.Content>
         <Title style={styles.statsTitle}>Your Impact</Title>
-        
+
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
-            <TrendingUp size={24} color={theme.colors.success} />
+            <DollarSign size={24} color={theme.colors.success} />
             <Text style={styles.statValue}>${stats.totalValueUnlocked}</Text>
             <Text style={styles.statLabel}>Total Value Unlocked</Text>
           </View>
-          
+
           <View style={styles.statItem}>
             <Leaf size={24} color={theme.colors.primary} />
             <Text style={styles.statValue}>{stats.totalCO2Saved} CO₂</Text>
             <Text style={styles.statLabel}>Total CO₂ Saved</Text>
           </View>
-          
+
           <View style={styles.statItem}>
-            <Package size={24} color={theme.colors.accent} />
+            <BarChart3 size={24} color={theme.colors.accent} />
             <Text style={styles.statValue}>{stats.itemsScanned}</Text>
             <Text style={styles.statLabel}>Items Scanned</Text>
           </View>
         </View>
-        
+
         <View style={styles.badgesContainer}>
           <Text style={styles.badgesTitle}>Badges Earned:</Text>
           <View style={styles.badgesRow}>
             {stats.badges.map((badge, index) => (
-              <Chip key={index} style={styles.badge} textStyle={styles.badgeText}>
+              <Chip
+                key={index}
+                style={styles.badge}
+                textStyle={styles.badgeText}
+              >
                 {badge}
               </Chip>
             ))}
@@ -190,6 +208,8 @@ export default function DashboardScreen({ navigation }: Props) {
       </Card.Content>
     </Card>
   );
+
+  const styles = createStyles(theme);
 
   if (loading) {
     return (
@@ -236,172 +256,173 @@ export default function DashboardScreen({ navigation }: Props) {
         style={styles.fab}
         icon="plus"
         label="Scan Item"
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.navigate("Home")}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: 16,
-    color: theme.colors.placeholder,
-  },
-  header: {
-    padding: spacing.lg,
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.disabled,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: theme.colors.text,
-  },
-  listContainer: {
-    padding: spacing.md,
-  },
-  statsCard: {
-    marginBottom: spacing.lg,
-    backgroundColor: '#E8F5E8',
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: spacing.md,
-    color: theme.colors.primary,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: theme.colors.placeholder,
-    textAlign: 'center',
-  },
-  badgesContainer: {
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.disabled,
-    paddingTop: spacing.md,
-  },
-  badgesTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-    color: theme.colors.text,
-  },
-  badgesRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  badge: {
-    backgroundColor: theme.colors.accent,
-  },
-  badgeText: {
-    color: 'white',
-    fontSize: 12,
-  },
-  itemCard: {
-    marginBottom: spacing.md,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.md,
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
-  },
-  itemDate: {
-    fontSize: 12,
-    color: theme.colors.placeholder,
-  },
-  actionChip: {
-    marginLeft: spacing.sm,
-  },
-  actionChipText: {
-    color: 'white',
-    fontSize: 12,
-  },
-  itemDetails: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  itemStat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  itemStatText: {
-    fontSize: 14,
-    color: theme.colors.text,
-  },
-  itemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: theme.roundness,
-  },
-  emptyCard: {
-    marginTop: spacing.xxl,
-  },
-  emptyContent: {
-    alignItems: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    color: theme.colors.text,
-  },
-  emptyDescription: {
-    fontSize: 14,
-    color: theme.colors.placeholder,
-    textAlign: 'center',
-  },
-  fab: {
-    position: 'absolute',
-    margin: spacing.md,
-    right: 0,
-    bottom: 0,
-    backgroundColor: theme.colors.primary,
-  },
-});
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.background,
+    },
+    loadingText: {
+      marginTop: theme.spacing.md,
+      fontSize: 16,
+      color: theme.colors.placeholder,
+    },
+    header: {
+      padding: theme.spacing.lg,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.disabled,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.xs,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: theme.colors.text,
+    },
+    listContainer: {
+      padding: theme.spacing.md,
+    },
+    statsCard: {
+      marginBottom: theme.spacing.lg,
+      backgroundColor: theme.colors.surface,
+    },
+    statsTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      marginBottom: theme.spacing.md,
+      color: theme.colors.primary,
+    },
+    statsGrid: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: theme.spacing.lg,
+    },
+    statItem: {
+      alignItems: "center",
+      flex: 1,
+    },
+    statValue: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme.colors.text,
+      marginTop: theme.spacing.xs,
+      marginBottom: theme.spacing.xs,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: theme.colors.placeholder,
+      textAlign: "center",
+    },
+    badgesContainer: {
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.disabled,
+      paddingTop: theme.spacing.md,
+    },
+    badgesTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      marginBottom: theme.spacing.sm,
+      color: theme.colors.text,
+    },
+    badgesRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: theme.spacing.xs,
+    },
+    badge: {
+      backgroundColor: theme.colors.accent,
+    },
+    badgeText: {
+      color: "white",
+      fontSize: 12,
+    },
+    itemCard: {
+      marginBottom: theme.spacing.md,
+    },
+    itemHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: theme.spacing.md,
+    },
+    itemInfo: {
+      flex: 1,
+    },
+    itemName: {
+      fontSize: 16,
+      fontWeight: "600",
+      marginBottom: theme.spacing.xs,
+    },
+    itemDate: {
+      fontSize: 12,
+      color: theme.colors.placeholder,
+    },
+    actionChip: {
+      marginLeft: theme.spacing.sm,
+    },
+    actionChipText: {
+      color: "white",
+      fontSize: 12,
+    },
+    itemDetails: {
+      flexDirection: "row",
+      gap: theme.spacing.lg,
+      marginBottom: theme.spacing.md,
+    },
+    itemStat: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.xs,
+    },
+    itemStatText: {
+      fontSize: 14,
+      color: theme.colors.text,
+    },
+    itemImage: {
+      width: 60,
+      height: 60,
+      borderRadius: 8,
+    },
+    emptyCard: {
+      marginTop: theme.spacing.xxl,
+    },
+    emptyContent: {
+      alignItems: "center",
+      paddingVertical: theme.spacing.xxl,
+    },
+    emptyTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      marginTop: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+      color: theme.colors.text,
+    },
+    emptyDescription: {
+      fontSize: 14,
+      color: theme.colors.placeholder,
+      textAlign: "center",
+    },
+    fab: {
+      position: "absolute",
+      margin: theme.spacing.md,
+      right: 0,
+      bottom: 0,
+      backgroundColor: theme.colors.primary,
+    },
+  });

@@ -242,6 +242,65 @@ IMPORTANT:
     }
 
     /**
+     * Calculate CO2 emissions saved by reselling instead of discarding
+     */
+    async calculateCO2EmissionsSaved(itemInfo) {
+        try {
+            const prompt = `You are an environmental sustainability expert. Calculate the CO2 emissions saved by reselling/reusing this item instead of throwing it away and buying a new replacement.
+
+ITEM DETAILS:
+${JSON.stringify(itemInfo, null, 2)}
+
+Consider:
+1. Manufacturing emissions for producing a new replacement item
+2. Transportation emissions (manufacturing to retail)
+3. Disposal/landfill emissions if discarded
+4. Material composition and carbon footprint
+5. Energy used in production
+6. Packaging materials avoided
+
+Provide response in JSON format:
+{
+  "co2SavedKg": <number in kilograms>,
+  "co2SavedLbs": <number in pounds>,
+  "equivalentTrees": <number of trees needed to offset this CO2>,
+  "equivalentCarMiles": <miles a car would need to drive to produce this much CO2>,
+  "breakdown": {
+    "manufacturingEmissions": <kg CO2>,
+    "transportationEmissions": <kg CO2>,
+    "disposalEmissionsAvoided": <kg CO2>
+  },
+  "environmentalImpact": "<brief description of environmental benefit>",
+  "comparisonMetric": "<relatable comparison, e.g., 'equivalent to charging 500 smartphones'>"
+}
+
+IMPORTANT: 
+- Use realistic CO2 emission data based on the specific item category and materials
+- Be conservative in estimates but scientifically accurate
+- Respond ONLY with valid JSON`;
+
+            const response = await this.ai.models.generateContent({
+                model: 'gemini-2.0-flash-001',
+                contents: prompt
+            });
+
+            const text = response.text;
+
+            // Clean the response - remove markdown code blocks if present
+            let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+
+            throw new Error('Could not parse CO2 emissions data');
+        } catch (error) {
+            throw new Error(`CO2 emissions calculation failed: ${error.message}`);
+        }
+    }
+
+    /**
      * Main analysis function with optional product description
      */
     async analyzeItem(imagePath, productDescription = null) {
@@ -267,6 +326,10 @@ IMPORTANT:
 
             console.log('\nStep 4: Getting AI prediction and recommendation...');
             const prediction = await this.getPricePrediction(itemInfo, historyData, currentPrice);
+
+            console.log('\nStep 5: Calculating CO2 emissions saved...');
+            const co2Data = await this.calculateCO2EmissionsSaved(itemInfo);
+            console.log(`CO2 saved by reselling: ${co2Data.co2SavedKg.toFixed(2)} kg`);
 
             return {
                 itemInfo,
@@ -300,6 +363,19 @@ IMPORTANT:
                     action: prediction.recommendation,
                     reason: prediction.recommendationReason,
                     confidence: prediction.confidence
+                },
+                environmentalImpact: {
+                    co2SavedKg: co2Data.co2SavedKg.toFixed(2),
+                    co2SavedLbs: co2Data.co2SavedLbs.toFixed(2),
+                    equivalentTrees: Math.round(co2Data.equivalentTrees),
+                    equivalentCarMiles: Math.round(co2Data.equivalentCarMiles),
+                    breakdown: {
+                        manufacturingEmissions: co2Data.breakdown.manufacturingEmissions.toFixed(2),
+                        transportationEmissions: co2Data.breakdown.transportationEmissions.toFixed(2),
+                        disposalEmissionsAvoided: co2Data.breakdown.disposalEmissionsAvoided.toFixed(2)
+                    },
+                    environmentalImpact: co2Data.environmentalImpact,
+                    comparisonMetric: co2Data.comparisonMetric
                 },
                 timestamp: new Date().toISOString()
             };

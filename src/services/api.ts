@@ -5,7 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const STORAGE_KEY = '@scanned_items';
 
 export class ApiService {
-    private static baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5001';
+
+    private static baseUrl: string = (() => {
+        return "https://loreen-unpredestined-jodee.ngrok-free.dev"
+    })();
 
     static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {
         const formData = new FormData();
@@ -41,7 +44,7 @@ export class ApiService {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                // DO NOT set Content-Type - let FormData set it automatically with boundary
+                'ngrok-skip-browser-warning': '1234',
             },
             body: formData,
         });

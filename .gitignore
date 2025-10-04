@@ -49,3 +49,5 @@ bower_components/
 .expo-shared/
 /backend/file/
 backend/env
+
+uploads/

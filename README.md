@@ -56,7 +56,6 @@ npm install
 
 ### 2️⃣ Configure & start the backend
 
-Create your `.env` file in `backend/`:
 
 ```bash
 # backend/.env
@@ -76,23 +75,14 @@ node backend/server.js
 
 ### 3️⃣ Start the Expo app
 
-* **macOS/Linux**
-
-  ```bash
-  EXPO_PUBLIC_API_URL=http://localhost:5001 npm start
-  ```
 
 * **Windows (PowerShell)**
 
-  ```powershell
-  $env:EXPO_PUBLIC_API_URL="http://localhost:5001"; npm start
-  ```
+  >>>npm i
+  >>>npx expo start --tunnel
 
-> 💡 On a physical device? Replace `localhost` with your computer’s LAN IP, e.g.
-> `EXPO_PUBLIC_API_URL=http://192.168.1.10:5001 npm start`
-
----
-
+  Either scan the QR code in terminal using another device that has Expo Go downloaded or follow the localhost link
+  
 ### 4️⃣ Run on a device or emulator
 
 | Command | Action                  |

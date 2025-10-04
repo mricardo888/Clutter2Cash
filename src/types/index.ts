@@ -29,10 +29,12 @@ export type RootStackParamList = {
   Results: { item: ScannedItem };
   Dashboard: undefined;
   Profile: undefined;
+  Login: undefined;
 };
 
 export type TabParamList = {
   HomeTab: undefined;
   DashboardTab: undefined;
   ProfileTab: undefined;
+  LoginTab: undefined;
 };

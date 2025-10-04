@@ -13,7 +13,7 @@ const mockAnalysisData: AnalysisResponse[] = [
 ];
 
 export class ApiService {
-  private static baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+  private static baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
   // Analyze item from image or text
   static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {

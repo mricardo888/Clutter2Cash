@@ -5,7 +5,7 @@
   "description": "Backend API for Clutter2Cash price analysis",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server.js",                
     "analyze": "node example.js",
     "dev": "nodemon server.js"
   },

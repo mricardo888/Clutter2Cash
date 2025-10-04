@@ -7,12 +7,12 @@ const STORAGE_KEY = '@scanned_items';
 export class ApiService {
 
     private static baseUrl: string = (() => {
-        return process.env.BASE_URL
+        return "https://loreen-unpredestined-jodee.ngrok-free.dev"
     })();
 
     static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {
         const formData = new FormData();
-
+        console.log(this.baseUrl)
         if (imageUri) {
             try {
                 const fileName = imageUri.split('/').pop() || 'photo.jpg';

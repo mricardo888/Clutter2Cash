@@ -27,7 +27,7 @@
     "react-native-screens": "^4.16.0",
     "react-native-web": "^0.21.0",
     "@google/genai": "^0.3.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
@@ -42,6 +42,6 @@
     "ai"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
   "private": true
 }

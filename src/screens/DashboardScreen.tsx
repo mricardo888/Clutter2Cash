@@ -422,7 +422,7 @@ const createStyles = (theme: any, insets: any) =>
       borderRadius: 8,
     },
     emptyCard: {
-      marginTop: 48,
+      marginTop: 16,
     },
     emptyContent: {
       alignItems: "center",

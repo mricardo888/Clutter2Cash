@@ -35,7 +35,8 @@ export const Auth0Provider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const redirectUri = makeRedirectUri({
         scheme: 'com.clutter2cash',
-        path: 'auth'
+        path: 'auth',
+        preferLocalhost: true,
     });
 
     const discovery = AuthSession.useAutoDiscovery(`https://${auth0Config.domain}`);

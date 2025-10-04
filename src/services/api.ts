@@ -47,7 +47,7 @@ export class ApiService {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${this.accessToken}`,
+                'Authorization': `${this.accessToken}`,
                 'ngrok-skip-browser-warning': '1234',
             },
             body: formData,

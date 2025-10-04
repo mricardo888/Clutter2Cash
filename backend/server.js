@@ -41,20 +41,57 @@ app.use(express.json());
 
 const upload = multer({ dest: "uploads/" });
 
-// --- JWT Authentication Middleware ---
+// --- JWT Authentication Middleware (Required) ---
 async function authenticate(req, res, next) {
     try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+        const token = req.headers.authorization;
+        console.log('bearer test', token)
+
         if (!token) return res.status(401).json({ error: "No token provided" });
+        console.log('first', process.env.JWT_SECRET)
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        console.log('check user', decoded)
         const user = await User.findById(decoded.id);
+
+        console.log('check user')
         if (!user) return res.status(403).json({ error: "Invalid token" });
 
         req.user = user;
         next();
     } catch (error) {
+        console.log('banned')
         res.status(403).json({ error: "Invalid token" });
+        console.log('hello')
+    }
+}
+
+// --- Optional Authentication Middleware ---
+async function optionalAuth(req, res, next) {
+    try {
+        const token = req.headers.authorization;
+
+        if (!token) {
+            // No token provided - continue as guest
+            req.user = null;
+            return next();
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (user) {
+            req.user = user;
+        } else {
+            req.user = null;
+        }
+
+        next();
+    } catch (error) {
+        // Invalid token - continue as guest
+        req.user = null;
+        next();
     }
 }
 
@@ -121,15 +158,15 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// --- ANALYZE ROUTE ---
-app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
+// --- ANALYZE ROUTE (Works with or without auth) ---
+app.post("/analyze", optionalAuth, upload.single("image"), async (req, res) => {
     let imagePath = null;
 
     try {
         const { description } = req.body;
 
-        console.log("📥 Received request:");
-        console.log("- User:", req.user.email);
+        console.log("🔥 Received request:");
+        console.log("- User:", req.user ? req.user.email : "Guest");
         console.log("- File:", req.file ? "Yes" : "No");
         console.log("- Description:", description || "None");
 
@@ -139,47 +176,65 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
 
         imagePath = req.file?.path;
 
-        console.log("ðŸ” Analyzing item...");
+        console.log("🤖 Analyzing item...");
         const analyzer = new aipriceAnalyzer();
         const result = await analyzer.analyzeItem(imagePath, description);
         console.log("✅ Analysis complete:", result);
 
-        // Create new ScannedItem document
-        const scannedItem = new ScannedItem({
-            userId: req.user._id,
-            itemName: result.itemInfo?.itemName || "Unknown Item",
-            description: result.itemInfo?.description || description,
-            category: result.itemInfo?.category || 'Other',
-            estimatedValue: parseFloat(result.currentSellingPrice?.average) || 0,
-            condition: result.itemInfo?.condition || 'Good',
-            ecoImpact: {
-                co2SavedKg: parseFloat(result.environmentalImpact?.co2SavedKg) || 0,
-                description: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`
-            },
-            confidence: result.prediction?.confidence || "medium",
-            priceAnalysis: {
-                currentAverage: parseFloat(result.currentSellingPrice?.average) || 0,
-                priceRange: {
-                    min: parseFloat(result.currentSellingPrice?.min) || 0,
-                    max: parseFloat(result.currentSellingPrice?.max) || 0
+        // Only save to database if user is logged in
+        if (req.user) {
+            const scannedItem = new ScannedItem({
+                userId: req.user._id,
+                itemName: result.itemInfo?.itemName || "Unknown Item",
+                description: result.itemInfo?.description || description,
+                category: result.itemInfo?.category || 'Other',
+                estimatedValue: parseFloat(result.currentSellingPrice?.average) || 0,
+                condition: result.itemInfo?.condition || 'Good',
+                ecoImpact: {
+                    co2SavedKg: parseFloat(result.environmentalImpact?.co2SavedKg) || 0,
+                    description: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`
                 },
-                marketTrend: result.marketTrend || 'stable'
-            },
-            fullAnalysis: result
-        });
+                confidence: result.prediction?.confidence || "medium",
+                priceAnalysis: {
+                    currentAverage: parseFloat(result.currentSellingPrice?.average) || 0,
+                    priceRange: {
+                        min: parseFloat(result.currentSellingPrice?.min) || 0,
+                        max: parseFloat(result.currentSellingPrice?.max) || 0
+                    },
+                    marketTrend: result.marketTrend || 'stable'
+                },
+                fullAnalysis: result
+            });
 
-        await scannedItem.save();
+            await scannedItem.save();
 
-        console.log("📤 Sending response");
-        res.json({
-            id: scannedItem._id,
-            item: scannedItem.itemName,
-            value: scannedItem.estimatedValue,
-            ecoImpact: scannedItem.ecoImpact.description,
-            confidence: scannedItem.confidence,
-            category: scannedItem.category,
-            timestamp: scannedItem.createdAt
-        });
+            console.log("📤 Sending response (saved to DB)");
+            res.json({
+                id: scannedItem._id,
+                item: scannedItem.itemName,
+                value: scannedItem.estimatedValue,
+                ecoImpact: scannedItem.ecoImpact.description,
+                confidence: scannedItem.confidence,
+                category: scannedItem.category,
+                timestamp: scannedItem.createdAt,
+                saved: true
+            });
+        } else {
+            // Guest mode - return analysis without saving
+            console.log("📤 Sending response (guest mode - not saved)");
+            res.json({
+                id: null,
+                item: result.itemInfo?.itemName || "Unknown Item",
+                value: parseFloat(result.currentSellingPrice?.average) || 0,
+                ecoImpact: `${result.environmentalImpact?.co2SavedKg || 0} kg CO₂ saved`,
+                confidence: result.prediction?.confidence || "medium",
+                category: result.itemInfo?.category || 'Other',
+                timestamp: new Date(),
+                saved: false,
+                guestMode: true,
+                message: "Sign in to save your scanned items"
+            });
+        }
     } catch (error) {
         console.error("❌ Analysis error:", error);
         res.status(500).json({ error: error.message, details: error.stack });
@@ -195,7 +250,7 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
     }
 });
 
-// --- GET SCANNED ITEMS ROUTES ---
+// --- GET SCANNED ITEMS ROUTES (Require authentication) ---
 
 // Get all scanned items for user
 app.get("/scanned-items", authenticate, async (req, res) => {
@@ -327,11 +382,12 @@ app.post("/scanned-items/:id/sold", authenticate, async (req, res) => {
     }
 });
 
-// --- USER STATS ROUTES ---
+// --- USER STATS ROUTES (Require authentication) ---
 
 // Get user profile with stats
 app.get("/profile", authenticate, async (req, res) => {
     try {
+        console.log('does anything work?', req.user._id)
         const stats = await ScannedItem.getUserTotalValue(req.user._id);
         const categoryBreakdown = await ScannedItem.getUserItemsByCategory(req.user._id);
 
@@ -380,5 +436,5 @@ app.get("/", (req, res) => {
 
 // --- START SERVER ---
 app.listen(PORT, () => {
-    console.log(`âœ… Server running on http://localhost:${PORT}`);
+    console.log(`✔️ Server running on http://localhost:${PORT}`);
 });

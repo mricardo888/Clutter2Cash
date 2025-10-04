@@ -2,22 +2,24 @@ import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
+import { Auth0Provider } from "./src/contexts/Auth0Context";
 import AppNavigator from "./src/navigation/AppNavigator";
 import * as NavigationBar from "expo-navigation-bar";
 
 export default function App() {
     return (
         <SafeAreaProvider>
-            <ThemeProvider>
-                <AppContent />
-            </ThemeProvider>
+            <Auth0Provider>
+                <ThemeProvider>
+                    <AppContent />
+                </ThemeProvider>
+            </Auth0Provider>
         </SafeAreaProvider>
     );
 }
 
 function AppContent() {
     useEffect(() => {
-        // Hide Android navigation bar for immersive experience
         const setupNavigationBar = async () => {
             try {
                 await NavigationBar.setVisibilityAsync("hidden");

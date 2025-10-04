@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, Alert, StatusBar, TextInput } from "react-native";
+import { View, StyleSheet, ScrollView, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
     Card,
@@ -11,126 +11,39 @@ import {
     Avatar,
     ActivityIndicator,
 } from "react-native-paper";
-import {
-    Leaf,
-    Target,
-    Shield,
-    LogOut,
-} from "lucide-react-native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../types";
+import { Leaf, Target, LogOut } from "lucide-react-native";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth0 } from "../contexts/Auth0Context";
 import { ApiService } from "../services/api";
 
-type ProfileScreenNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    "Profile"
->;
-
-interface Props {
-    navigation: ProfileScreenNavigationProp;
-}
-
-export default function ProfileScreen({ navigation }: Props) {
+export default function ProfileScreen() {
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
-
-    // Auth state
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [authLoading, setAuthLoading] = useState(false);
-
-    // Login/Register form
-    const [isLoginMode, setIsLoginMode] = useState(true);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    // User profile data
+    const { isAuthenticated, isLoading, user, login, logout } = useAuth0();
     const [profile, setProfile] = useState<any>(null);
+    const [loadingProfile, setLoadingProfile] = useState(false);
 
     useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        try {
-            const authenticated = await ApiService.isAuthenticated();
-            setIsAuthenticated(authenticated);
-
-            if (authenticated) {
-                loadProfile();
-            }
-        } catch (error) {
-            console.error("Error checking auth:", error);
-        } finally {
-            setLoading(false);
+        if (isAuthenticated) {
+            loadProfile();
         }
-    };
+    }, [isAuthenticated]);
 
     const loadProfile = async () => {
+        setLoadingProfile(true);
         try {
             const profileData = await ApiService.getProfile();
             setProfile(profileData);
         } catch (error) {
             console.error("Error loading profile:", error);
-            Alert.alert("Error", "Failed to load profile");
-        }
-    };
-
-    const handleAuth = async () => {
-        if (!email || !password || (!isLoginMode && !name)) {
-            Alert.alert("Missing Info", "Please fill in all fields");
-            return;
-        }
-
-        setAuthLoading(true);
-        try {
-            if (isLoginMode) {
-                await ApiService.login(email, password);
-                Alert.alert("Success", "Logged in successfully!");
-            } else {
-                await ApiService.register(name, email, password);
-                Alert.alert("Success", "Account created successfully!");
-            }
-
-            setIsAuthenticated(true);
-            await loadProfile();
-
-            // Clear form
-            setName("");
-            setEmail("");
-            setPassword("");
-        } catch (error: any) {
-            Alert.alert("Error", error.message || "Authentication failed");
         } finally {
-            setAuthLoading(false);
+            setLoadingProfile(false);
         }
-    };
-
-    const handleLogout = async () => {
-        Alert.alert(
-            "Logout",
-            "Are you sure you want to logout?",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Logout",
-                    style: "destructive",
-                    onPress: async () => {
-                        await ApiService.logout();
-                        setIsAuthenticated(false);
-                        setProfile(null);
-                        Alert.alert("Success", "Logged out successfully");
-                    },
-                },
-            ]
-        );
     };
 
     const styles = createStyles(theme, insets);
 
-    if (loading) {
+    if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -138,7 +51,7 @@ export default function ProfileScreen({ navigation }: Props) {
         );
     }
 
-    // Login/Register Screen
+    // Login Screen
     if (!isAuthenticated) {
         return (
             <>
@@ -146,78 +59,30 @@ export default function ProfileScreen({ navigation }: Props) {
                     barStyle={theme.mode === "dark" ? "light-content" : "dark-content"}
                     backgroundColor={theme.colors.surface}
                 />
-                <ScrollView style={styles.container}>
-                    <View style={[styles.authContainer, { paddingTop: insets.top + 40 }]}>
-                        <Avatar.Icon
-                            size={80}
-                            icon="account"
-                            style={styles.avatar}
-                        />
-                        <Title style={styles.authTitle}>
-                            {isLoginMode ? "Welcome Back!" : "Create Account"}
-                        </Title>
-                        <Paragraph style={styles.authSubtitle}>
-                            {isLoginMode
-                                ? "Login to track your decluttering journey"
-                                : "Join Clutter2Cash to start your journey"}
-                        </Paragraph>
+                <View style={styles.loginContainer}>
+                    <Avatar.Icon
+                        size={100}
+                        icon="leaf"
+                        style={styles.avatar}
+                    />
+                    <Title style={styles.loginTitle}>Welcome to Clutter2Cash</Title>
+                    <Paragraph style={styles.loginSubtitle}>
+                        Turn your clutter into cash while helping the planet
+                    </Paragraph>
 
-                        <Card style={styles.authCard}>
-                            <Card.Content>
-                                {!isLoginMode && (
-                                    <TextInput
-                                        placeholder="Full Name"
-                                        value={name}
-                                        onChangeText={setName}
-                                        style={styles.input}
-                                        placeholderTextColor={theme.colors.placeholder}
-                                        editable={!authLoading}
-                                    />
-                                )}
-                                <TextInput
-                                    placeholder="Email"
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    style={styles.input}
-                                    placeholderTextColor={theme.colors.placeholder}
-                                    editable={!authLoading}
-                                />
-                                <TextInput
-                                    placeholder="Password"
-                                    secureTextEntry
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    style={styles.input}
-                                    placeholderTextColor={theme.colors.placeholder}
-                                    editable={!authLoading}
-                                />
+                    <Button
+                        mode="contained"
+                        onPress={login}
+                        style={styles.loginButton}
+                        contentStyle={styles.loginButtonContent}
+                    >
+                        Login with Auth0
+                    </Button>
 
-                                <Button
-                                    mode="contained"
-                                    onPress={handleAuth}
-                                    loading={authLoading}
-                                    disabled={authLoading}
-                                    style={styles.authButton}
-                                >
-                                    {isLoginMode ? "Login" : "Sign Up"}
-                                </Button>
-
-                                <Button
-                                    mode="text"
-                                    onPress={() => setIsLoginMode(!isLoginMode)}
-                                    disabled={authLoading}
-                                    style={styles.switchButton}
-                                >
-                                    {isLoginMode
-                                        ? "Don't have an account? Sign Up"
-                                        : "Already have an account? Login"}
-                                </Button>
-                            </Card.Content>
-                        </Card>
-                    </View>
-                </ScrollView>
+                    <Text style={styles.secureText}>
+                        🔒 Secure authentication powered by Auth0
+                    </Text>
+                </View>
             </>
         );
     }
@@ -231,19 +96,19 @@ export default function ProfileScreen({ navigation }: Props) {
             />
             <ScrollView style={styles.container}>
                 <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-                    <Avatar.Text
+                    <Avatar.Image
                         size={80}
-                        label={profile?.user?.name?.slice(0, 2).toUpperCase() || "??"}
+                        source={{ uri: user?.picture }}
                         style={styles.avatar}
                     />
                     <Title style={styles.userName}>
-                        {profile?.user?.name || "User"}
+                        {user?.name || "User"}
                     </Title>
                     <Text style={styles.userEmail}>
-                        {profile?.user?.email || ""}
+                        {user?.email || ""}
                     </Text>
 
-                    {profile?.stats && (
+                    {profile?.stats && !loadingProfile && (
                         <View style={styles.quickStats}>
                             <View style={styles.quickStat}>
                                 <Leaf size={16} color={theme.colors.primary} />
@@ -261,44 +126,53 @@ export default function ProfileScreen({ navigation }: Props) {
                     )}
                 </View>
 
-                <Card style={styles.statsCard}>
-                    <Card.Content>
-                        <Title style={styles.cardTitle}>Your Stats</Title>
-                        <View style={styles.statRow}>
-                            <Text style={styles.statLabel}>Total Value Unlocked:</Text>
-                            <Text style={styles.statValue}>
-                                ${profile?.stats?.totalValue?.toFixed(2) || "0.00"}
-                            </Text>
-                        </View>
-                        <View style={styles.statRow}>
-                            <Text style={styles.statLabel}>Items Scanned:</Text>
-                            <Text style={styles.statValue}>
-                                {profile?.stats?.totalItems || 0}
-                            </Text>
-                        </View>
-                        <View style={styles.statRow}>
-                            <Text style={styles.statLabel}>CO₂ Saved:</Text>
-                            <Text style={styles.statValue}>
-                                {profile?.stats?.totalCO2Saved || 0}kg
-                            </Text>
-                        </View>
-                    </Card.Content>
-                </Card>
+                {loadingProfile ? (
+                    <View style={styles.loadingStats}>
+                        <ActivityIndicator size="small" color={theme.colors.primary} />
+                        <Text style={styles.loadingText}>Loading your stats...</Text>
+                    </View>
+                ) : profile?.stats ? (
+                    <>
+                        <Card style={styles.statsCard}>
+                            <Card.Content>
+                                <Title style={styles.cardTitle}>Your Impact</Title>
+                                <View style={styles.statRow}>
+                                    <Text style={styles.statLabel}>Total Value Unlocked:</Text>
+                                    <Text style={styles.statValue}>
+                                        ${profile.stats.totalValue?.toFixed(2) || "0.00"}
+                                    </Text>
+                                </View>
+                                <View style={styles.statRow}>
+                                    <Text style={styles.statLabel}>Items Scanned:</Text>
+                                    <Text style={styles.statValue}>
+                                        {profile.stats.totalItems || 0}
+                                    </Text>
+                                </View>
+                                <View style={styles.statRow}>
+                                    <Text style={styles.statLabel}>CO₂ Saved:</Text>
+                                    <Text style={styles.statValue}>
+                                        {profile.stats.totalCO2Saved || 0}kg
+                                    </Text>
+                                </View>
+                            </Card.Content>
+                        </Card>
 
-                {profile?.user?.badges && profile.user.badges.length > 0 && (
-                    <Card style={styles.badgesCard}>
-                        <Card.Content>
-                            <Title style={styles.cardTitle}>Badges</Title>
-                            <View style={styles.badgesRow}>
-                                {profile.user.badges.map((badge: string, index: number) => (
-                                    <View key={index} style={styles.badge}>
-                                        <Text style={styles.badgeText}>{badge}</Text>
+                        {profile.user?.badges && profile.user.badges.length > 0 && (
+                            <Card style={styles.badgesCard}>
+                                <Card.Content>
+                                    <Title style={styles.cardTitle}>Badges</Title>
+                                    <View style={styles.badgesRow}>
+                                        {profile.user.badges.map((badge: string, index: number) => (
+                                            <View key={index} style={styles.badge}>
+                                                <Text style={styles.badgeText}>{badge}</Text>
+                                            </View>
+                                        ))}
                                     </View>
-                                ))}
-                            </View>
-                        </Card.Content>
-                    </Card>
-                )}
+                                </Card.Content>
+                            </Card>
+                        )}
+                    </>
+                ) : null}
 
                 <Card style={styles.actionsCard}>
                     <Card.Content>
@@ -307,7 +181,7 @@ export default function ProfileScreen({ navigation }: Props) {
                             title="Logout"
                             description="Sign out of your account"
                             left={() => <LogOut size={24} color={theme.colors.error} />}
-                            onPress={handleLogout}
+                            onPress={logout}
                         />
                     </Card.Content>
                 </Card>
@@ -328,43 +202,39 @@ const createStyles = (theme: any, insets: any) =>
             alignItems: "center",
             backgroundColor: theme.colors.background,
         },
-        authContainer: {
-            padding: 24,
+        loginContainer: {
+            flex: 1,
+            justifyContent: "center",
             alignItems: "center",
+            padding: 24,
+            backgroundColor: theme.colors.background,
         },
-        authTitle: {
+        loginTitle: {
             fontSize: 28,
             fontWeight: "bold",
             color: theme.colors.text,
-            marginTop: 16,
+            marginTop: 24,
+            marginBottom: 8,
+            textAlign: "center",
         },
-        authSubtitle: {
+        loginSubtitle: {
             fontSize: 16,
             color: theme.colors.textSecondary,
             textAlign: "center",
-            marginTop: 8,
-            marginBottom: 32,
+            marginBottom: 48,
+            maxWidth: 300,
         },
-        authCard: {
+        loginButton: {
             width: "100%",
-            backgroundColor: theme.colors.surface,
+            maxWidth: 300,
         },
-        input: {
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-            borderRadius: 8,
-            padding: 12,
-            marginBottom: 16,
-            fontSize: 16,
-            color: theme.colors.text,
-            backgroundColor: theme.colors.card,
+        loginButtonContent: {
+            paddingVertical: 8,
         },
-        authButton: {
-            marginTop: 8,
-            paddingVertical: 4,
-        },
-        switchButton: {
-            marginTop: 8,
+        secureText: {
+            marginTop: 24,
+            fontSize: 12,
+            color: theme.colors.textSecondary,
         },
         header: {
             padding: 24,
@@ -400,6 +270,14 @@ const createStyles = (theme: any, insets: any) =>
         },
         quickStatText: {
             fontSize: 14,
+            color: theme.colors.textSecondary,
+        },
+        loadingStats: {
+            padding: 32,
+            alignItems: "center",
+        },
+        loadingText: {
+            marginTop: 12,
             color: theme.colors.textSecondary,
         },
         statsCard: {

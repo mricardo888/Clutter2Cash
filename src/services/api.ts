@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system';
 export class ApiService {
   private static baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
+
   static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {
     const formData = new FormData();
 

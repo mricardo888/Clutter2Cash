@@ -30,6 +30,9 @@ yarn-error.*
 .DS_Store
 *.pem
 
+# JetBrains IDE specific
+.idea/
+/results
 # local env files
 .env*.local
 

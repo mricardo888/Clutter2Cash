@@ -110,7 +110,7 @@ export default function ProfileScreen({ navigation }: Props) {
             />
             <ScrollView
                 style={styles.container}
-                contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+                contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
             >
                 <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
                     <Avatar.Text

@@ -1,180 +1,266 @@
-import { AnalysisResponse, ScannedItem } from '../types';
-import { Platform } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ScannedItem } from "../types";
+
+const API_URL = "http://localhost:5001"; // Change to your actual backend URL
 
 export class ApiService {
-    private static baseUrl: string = "https://loreen-unpredestined-jodee.ngrok-free.dev";
-    private static accessToken: string | null = null;
-
-    // Set access token (called by Auth0Provider)
-    static setAccessToken(token: string) {
-        this.accessToken = token;
+    // Get auth token from storage
+    private static async getToken(): Promise<string | null> {
+        try {
+            return await AsyncStorage.getItem("authToken");
+        } catch (error) {
+            console.error("Error getting token:", error);
+            return null;
+        }
     }
 
-    // Analyze item (requires authentication)
-    static async analyzeItem(imageUri?: string, textInput?: string): Promise<AnalysisResponse> {
-        if (!this.accessToken) {
-            throw new Error('Authentication required');
+    // Save auth token
+    static async saveToken(token: string): Promise<void> {
+        try {
+            await AsyncStorage.setItem("authToken", token);
+        } catch (error) {
+            console.error("Error saving token:", error);
         }
+    }
 
+    // Clear auth token
+    static async clearToken(): Promise<void> {
+        try {
+            await AsyncStorage.removeItem("authToken");
+        } catch (error) {
+            console.error("Error clearing token:", error);
+        }
+    }
+
+    // Analyze item (works with or without auth)
+    static async analyzeItem(
+        imageUri?: string,
+        description?: string
+    ): Promise<any> {
         const formData = new FormData();
 
         if (imageUri) {
-            try {
-                const fileName = imageUri.split('/').pop() || 'photo.jpg';
-                const fileType = `image/${fileName.split('.').pop() || 'jpg'}`;
+            const uriParts = imageUri.split(".");
+            const fileType = uriParts[uriParts.length - 1];
 
-                if (Platform.OS === 'web') {
-                    const response = await fetch(imageUri);
-                    const blob = await response.blob();
-                    formData.append('image', blob, fileName);
-                } else {
-                    formData.append('image', {
-                        uri: imageUri,
-                        name: fileName,
-                        type: fileType,
-                    } as any);
-                }
-            } catch (error) {
-                console.error('Error reading file:', error);
-            }
+            formData.append("image", {
+                uri: imageUri,
+                name: `photo.${fileType}`,
+                type: `image/${fileType}`,
+            } as any);
         }
 
-        if (textInput) {
-            formData.append('description', textInput);
+        if (description) {
+            formData.append("description", description);
         }
 
-        const response = await fetch(`${this.baseUrl}/analyze`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `${this.accessToken}`,
-                'ngrok-skip-browser-warning': '1234',
-            },
+        const token = await this.getToken();
+        const headers: any = {
+            "Content-Type": "multipart/form-data",
+        };
+
+        // Include token if available (for authenticated users)
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_URL}/analyze`, {
+            method: "POST",
+            headers,
             body: formData,
         });
 
         if (!response.ok) {
-            throw new Error('Failed to analyze item.');
+            const error = await response.json();
+            throw new Error(error.error || "Analysis failed");
         }
 
-        const data = await response.json();
-        return data as AnalysisResponse;
+        return response.json();
     }
 
-    // Get scanned items from backend
+    // Get scanned items history (requires auth)
     static async getHistory(): Promise<ScannedItem[]> {
-        if (!this.accessToken) {
+        const token = await this.getToken();
+
+        if (!token) {
+            console.log("No token - returning empty history");
             return [];
         }
 
-        const response = await fetch(`${this.baseUrl}/scanned-items`, {
-            method: 'GET',
+        const response = await fetch(`${API_URL}/scanned-items`, {
             headers: {
-                'Authorization': `Bearer ${this.accessToken}`,
-                'ngrok-skip-browser-warning': '1234',
+                Authorization: `Bearer ${token}`,
             },
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch history');
+            const error = await response.json();
+            throw new Error(error.error || "Failed to fetch history");
         }
 
-        const data = await response.json();
-        return data.map((item: any) => ({
+        const items = await response.json();
+
+        // Transform backend data to frontend format
+        return items.map((item: any) => ({
             id: item._id,
             name: item.itemName,
             value: item.estimatedValue,
             ecoImpact: item.ecoImpact.description,
             imageUri: item.images?.[0]?.url,
             timestamp: new Date(item.createdAt),
-            action: item.status === 'listed' ? 'sell' : item.status,
+            action: item.status === 'listed' ? 'sell' :
+                item.status === 'donated' ? 'donate' :
+                    item.status === 'sold' ? 'sell' : undefined,
         }));
     }
 
-    // Get user profile with stats
-    static async getProfile(): Promise<any> {
-        if (!this.accessToken) {
-            throw new Error('Authentication required');
-        }
-
-        const response = await fetch(`${this.baseUrl}/profile`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${this.accessToken}`,
-                'ngrok-skip-browser-warning': '1234',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch profile');
-        }
-
-        return await response.json();
-    }
-
-    // Get dashboard stats
-    static async getDashboard(): Promise<any> {
-        if (!this.accessToken) {
-            throw new Error('Authentication required');
-        }
-
-        const response = await fetch(`${this.baseUrl}/dashboard`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${this.accessToken}`,
-                'ngrok-skip-browser-warning': '1234',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch dashboard');
-        }
-
-        return await response.json();
-    }
-
-    // Update item
-    static async updateItem(itemId: string, updates: Partial<ScannedItem>): Promise<void> {
-        if (!this.accessToken) {
-            throw new Error('Authentication required');
-        }
-
-        const response = await fetch(`${this.baseUrl}/scanned-items/${itemId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.accessToken}`,
-                'ngrok-skip-browser-warning': '1234',
-            },
-            body: JSON.stringify(updates),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to update item');
-        }
-    }
-
-    // Delete item
-    static async deleteItem(itemId: string): Promise<void> {
-        if (!this.accessToken) {
-            throw new Error('Authentication required');
-        }
-
-        const response = await fetch(`${this.baseUrl}/scanned-items/${itemId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${this.accessToken}`,
-                'ngrok-skip-browser-warning': '1234',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to delete item');
-        }
-    }
-
-    // Legacy method - kept for compatibility
+    // Save/update item with action (requires auth)
     static async saveItem(item: ScannedItem): Promise<void> {
-        console.log('Item saved via /analyze endpoint');
+        const token = await this.getToken();
+
+        if (!token) {
+            console.log("No token - cannot save item");
+            return;
+        }
+
+        // Update the item status based on action
+        const status = item.action === 'sell' ? 'listed' :
+            item.action === 'donate' ? 'donated' :
+                item.action === 'recycle' ? 'kept' : 'scanned';
+
+        const response = await fetch(`${API_URL}/scanned-items/${item.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to save item");
+        }
+    }
+
+    // Get user profile with stats (requires auth)
+    static async getProfile(): Promise<any> {
+        const token = await this.getToken();
+
+        if (!token) {
+            throw new Error("Not authenticated");
+        }
+
+        const response = await fetch(`${API_URL}/profile`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to fetch profile");
+        }
+
+        return response.json();
+    }
+
+    // Get dashboard stats (requires auth)
+    static async getDashboard(): Promise<any> {
+        const token = await this.getToken();
+
+        if (!token) {
+            throw new Error("Not authenticated");
+        }
+
+        const response = await fetch(`${API_URL}/dashboard`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to fetch dashboard");
+        }
+
+        return response.json();
+    }
+
+    // Get suggestions for sell/donate/recycle
+    static async getSuggestions(
+        itemName: string,
+        action: "sell" | "donate" | "recycle",
+        category?: string,
+        estimatedValue?: number
+    ): Promise<any> {
+        const response = await fetch(`${API_URL}/suggestions`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                itemName,
+                action,
+                category,
+                estimatedValue,
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to get suggestions");
+        }
+
+        return response.json();
+    }
+
+    // Login
+    static async login(email: string, password: string): Promise<any> {
+        const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Login failed");
+        }
+
+        const data = await response.json();
+        await this.saveToken(data.token);
+        return data;
+    }
+
+    // Register
+    static async register(
+        name: string,
+        email: string,
+        password: string
+    ): Promise<any> {
+        const response = await fetch(`${API_URL}/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email, password }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Registration failed");
+        }
+
+        const data = await response.json();
+        await this.saveToken(data.token);
+        return data;
+    }
+
+    // Logout
+    static async logout(): Promise<void> {
+        await this.clearToken();
     }
 }

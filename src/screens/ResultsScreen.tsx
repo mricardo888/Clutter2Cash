@@ -7,22 +7,32 @@ import {
     Alert,
     Linking,
 } from "react-native";
-import { Button, Card, Title, Paragraph, Text, Chip } from "react-native-paper";
+import {
+    Button,
+    Card,
+    Title,
+    Paragraph,
+    Text,
+    ActivityIndicator,
+    List,
+} from "react-native-paper";
 import {
     DollarSign,
     Leaf,
     Share2,
-    CheckCircle,
     Heart,
     Recycle,
     Sparkles,
     TrendingUp,
+    Store,
+    MapPin,
 } from "lucide-react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList, ScannedItem } from "../types";
 import { ApiService } from "../services/api";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth0 } from "../contexts/Auth0Context";
 
 type ResultsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -35,28 +45,75 @@ interface Props {
     route: ResultsScreenRouteProp;
 }
 
+interface Suggestions {
+    hasOptions: boolean;
+    message: string;
+    suggestions: string[];
+}
+
 export default function ResultsScreen({ navigation, route }: Props) {
     const { theme } = useTheme();
+    const { isAuthenticated } = useAuth0();
     const { item } = route.params;
     const [selectedAction, setSelectedAction] = useState<
         "sell" | "donate" | "recycle" | null
     >(null);
+    const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+    const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
+
+    const getSuggestions = async (action: "sell" | "donate" | "recycle") => {
+        setLoadingSuggestions(true);
+        try {
+            const data = await ApiService.getSuggestions(
+                item.name,
+                action,
+                "Electronics",
+                item.value
+            );
+            setSuggestions(data);
+        } catch (error) {
+            console.error("Error getting suggestions:", error);
+            setSuggestions({
+                hasOptions: false,
+                message: "Unable to load suggestions at this time.",
+                suggestions: [],
+            });
+        } finally {
+            setLoadingSuggestions(false);
+        }
+    };
 
     const handleAction = async (action: "sell" | "donate" | "recycle") => {
         setSelectedAction(action);
 
-        // Save the item with the chosen action
-        const updatedItem = { ...item, action };
-        await ApiService.saveItem(updatedItem);
+        // Get suggestions from Gemini
+        await getSuggestions(action);
 
-        // Show success message
+        // Save the item if authenticated
+        if (isAuthenticated && item.id) {
+            try {
+                const updatedItem = { ...item, action };
+                await ApiService.saveItem(updatedItem);
+            } catch (error) {
+                console.error("Error saving action:", error);
+            }
+        }
+    };
+
+    const handleDone = () => {
+        const actionText = selectedAction || "take action on";
         Alert.alert(
-            "Great Choice! 🌱",
-            `You chose to ${action} your ${item.name}. This helps reduce waste and supports sustainability!`,
+            "Great Choice!",
+            `You chose to ${actionText} your ${item.name}. ${
+                !isAuthenticated
+                    ? "Sign in to save your items and track your impact!"
+                    : "This helps reduce waste and supports sustainability!"
+            }`,
             [
                 {
-                    text: "View History",
-                    onPress: () => navigation.navigate("Dashboard"),
+                    text: isAuthenticated ? "View History" : "Sign In",
+                    onPress: () =>
+                        navigation.navigate(isAuthenticated ? "Dashboard" : "Login"),
                 },
                 {
                     text: "Scan Another",
@@ -114,6 +171,16 @@ export default function ResultsScreen({ navigation, route }: Props) {
                 <Paragraph style={styles.subtitle}>
                     Here's what we found about your item
                 </Paragraph>
+
+                {!isAuthenticated && (
+                    <Card style={styles.warningCard}>
+                        <Card.Content>
+                            <Text style={styles.warningText}>
+                                Sign in to save this item and track your impact over time!
+                            </Text>
+                        </Card.Content>
+                    </Card>
+                )}
             </View>
 
             {item.imageUri && (
@@ -129,7 +196,7 @@ export default function ResultsScreen({ navigation, route }: Props) {
                     <View style={styles.statsContainer}>
                         <View style={styles.statItem}>
                             <TrendingUp size={24} color={theme.colors.success} />
-                            <Text style={styles.statValue}>${item.value}</Text>
+                            <Text style={styles.statValue}>${item.value.toFixed(2)}</Text>
                             <Text style={styles.statLabel}>Estimated Value</Text>
                         </View>
 
@@ -158,7 +225,6 @@ export default function ResultsScreen({ navigation, route }: Props) {
                                 { backgroundColor: theme.colors.success },
                             ]}
                             icon={() => getActionIcon("sell")}
-                            loading={selectedAction === "sell"}
                             disabled={selectedAction !== null}
                         >
                             Sell
@@ -169,7 +235,6 @@ export default function ResultsScreen({ navigation, route }: Props) {
                             onPress={() => handleAction("donate")}
                             style={[styles.actionButton, { backgroundColor: "#E91E63" }]}
                             icon={() => getActionIcon("donate")}
-                            loading={selectedAction === "donate"}
                             disabled={selectedAction !== null}
                         >
                             Donate
@@ -183,7 +248,6 @@ export default function ResultsScreen({ navigation, route }: Props) {
                                 { backgroundColor: theme.colors.primary },
                             ]}
                             icon={() => getActionIcon("recycle")}
-                            loading={selectedAction === "recycle"}
                             disabled={selectedAction !== null}
                         >
                             Recycle
@@ -192,41 +256,106 @@ export default function ResultsScreen({ navigation, route }: Props) {
                 </Card.Content>
             </Card>
 
-            <Card style={styles.shareCard}>
-                <Card.Content>
-                    <Title style={styles.shareTitle}>Share Your Impact</Title>
-                    <Paragraph style={styles.shareDescription}>
-                        Let others know about your sustainable choice!
-                    </Paragraph>
+            {selectedAction && (
+                <Card style={styles.suggestionsCard}>
+                    <Card.Content>
+                        <View style={styles.suggestionsHeader}>
+                            <Store size={24} color={theme.colors.primary} />
+                            <Title style={styles.suggestionsTitle}>
+                                Where to {selectedAction}
+                            </Title>
+                        </View>
 
-                    <Button
-                        mode="outlined"
-                        onPress={handleShare}
-                        icon={() => <Share2 size={20} color={theme.colors.primary} />}
-                        style={styles.shareButton}
-                    >
-                        Share on Social Media
-                    </Button>
-                </Card.Content>
-            </Card>
+                        {loadingSuggestions ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="large" color={theme.colors.primary} />
+                                <Text style={styles.loadingText}>
+                                    Finding the best places for you...
+                                </Text>
+                            </View>
+                        ) : suggestions ? (
+                            <>
+                                {suggestions.hasOptions ? (
+                                    <>
+                                        <Paragraph style={styles.suggestionsDescription}>
+                                            Here are some recommended places:
+                                        </Paragraph>
+                                        {suggestions.suggestions.map((suggestion, index) => (
+                                            <List.Item
+                                                key={index}
+                                                title={suggestion}
+                                                titleNumberOfLines={3}
+                                                left={(props) => (
+                                                    <MapPin
+                                                        {...props}
+                                                        size={20}
+                                                        color={theme.colors.primary}
+                                                    />
+                                                )}
+                                                style={styles.suggestionItem}
+                                            />
+                                        ))}
+                                    </>
+                                ) : (
+                                    <View style={styles.noOptionsContainer}>
+                                        <Text style={styles.noOptionsText}>
+                                            {suggestions.message}
+                                        </Text>
+                                    </View>
+                                )}
 
-            <View style={styles.footerButtons}>
-                <Button
-                    mode="outlined"
-                    onPress={() => navigation.navigate("Home")}
-                    style={styles.footerButton}
-                >
-                    Scan Another Item
-                </Button>
+                                <Button
+                                    mode="contained"
+                                    onPress={handleDone}
+                                    style={styles.doneButton}
+                                >
+                                    Done
+                                </Button>
+                            </>
+                        ) : null}
+                    </Card.Content>
+                </Card>
+            )}
 
-                <Button
-                    mode="contained"
-                    onPress={() => navigation.navigate("Dashboard")}
-                    style={styles.footerButton}
-                >
-                    View History
-                </Button>
-            </View>
+            {!selectedAction && (
+                <>
+                    <Card style={styles.shareCard}>
+                        <Card.Content>
+                            <Title style={styles.shareTitle}>Share Your Impact</Title>
+                            <Paragraph style={styles.shareDescription}>
+                                Let others know about your sustainable choice!
+                            </Paragraph>
+
+                            <Button
+                                mode="outlined"
+                                onPress={handleShare}
+                                icon={() => <Share2 size={20} color={theme.colors.primary} />}
+                                style={styles.shareButton}
+                            >
+                                Share on Social Media
+                            </Button>
+                        </Card.Content>
+                    </Card>
+
+                    <View style={styles.footerButtons}>
+                        <Button
+                            mode="outlined"
+                            onPress={() => navigation.navigate("Home")}
+                            style={styles.footerButton}
+                        >
+                            Scan Another Item
+                        </Button>
+
+                        <Button
+                            mode="contained"
+                            onPress={() => navigation.navigate("Dashboard")}
+                            style={styles.footerButton}
+                        >
+                            View History
+                        </Button>
+                    </View>
+                </>
+            )}
         </ScrollView>
     );
 }
@@ -254,6 +383,16 @@ const createStyles = (theme: any) =>
             fontSize: 16,
             textAlign: "center",
             color: theme.colors.text,
+        },
+        warningCard: {
+            marginTop: 16,
+            backgroundColor: theme.colors.accent + "20",
+            borderWidth: 1,
+            borderColor: theme.colors.accent,
+        },
+        warningText: {
+            color: theme.colors.text,
+            textAlign: "center",
         },
         imageCard: {
             margin: 16,
@@ -311,10 +450,58 @@ const createStyles = (theme: any) =>
             marginBottom: 24,
         },
         actionsContainer: {
-            // Using individual margins instead of gap
+            gap: 16,
         },
         actionButton: {
+            marginBottom: 12,
+        },
+        suggestionsCard: {
+            margin: 16,
+            marginBottom: 8,
+            backgroundColor: theme.colors.surface,
+            borderWidth: 2,
+            borderColor: theme.colors.primary,
+        },
+        suggestionsHeader: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+            marginBottom: 8,
+        },
+        suggestionsTitle: {
+            fontSize: 18,
+            fontWeight: "600",
+            color: theme.colors.primary,
+        },
+        suggestionsDescription: {
+            fontSize: 14,
+            color: theme.colors.placeholder,
             marginBottom: 16,
+        },
+        loadingContainer: {
+            alignItems: "center",
+            paddingVertical: 32,
+        },
+        loadingText: {
+            marginTop: 16,
+            color: theme.colors.textSecondary,
+        },
+        suggestionItem: {
+            paddingVertical: 8,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.colors.border,
+        },
+        noOptionsContainer: {
+            paddingVertical: 16,
+        },
+        noOptionsText: {
+            fontSize: 14,
+            color: theme.colors.textSecondary,
+            textAlign: "center",
+            lineHeight: 20,
+        },
+        doneButton: {
+            marginTop: 16,
         },
         shareCard: {
             margin: 16,
@@ -337,6 +524,7 @@ const createStyles = (theme: any) =>
         footerButtons: {
             flexDirection: "row",
             padding: 24,
+            paddingBottom: 40,
         },
         footerButton: {
             flex: 1,

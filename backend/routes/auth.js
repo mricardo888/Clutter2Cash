@@ -2,6 +2,7 @@ import User from "./modules/User.js";
 import jwt from "jsonwebtoken";
 
 // Register
+// Register
 app.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -10,11 +11,21 @@ app.post("/register", async (req, res) => {
 
         const user = new User({ name, email, password });
         await user.save();
-        res.json({ message: "User registered successfully" });
+
+        // Generate JWT token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+        // Send token back to frontend
+        res.json({
+            message: "User registered successfully",
+            token,
+            user: { name: user.name, email: user.email, badges: user.badges }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 // Login
 app.post("/login", async (req, res) => {

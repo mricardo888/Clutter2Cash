@@ -376,7 +376,11 @@ export default function ProfileScreen({ navigation }: Props) {
         <View style={styles.footer}>
           <Button
             mode="contained"
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => {
+              console.log("Scan Item FAB pressed");
+              // @ts-ignore - navigating to tab within TabNavigator
+              navigation.navigate("HomeTab");
+            }}
             style={styles.startButton}
             labelStyle={{ color: "white" }}
           >

@@ -61,10 +61,11 @@ export default function DashboardScreen({ navigation }: Props) {
 
       // Calculate stats
       const totalValue = history.reduce((sum, item) => sum + item.value, 0);
-      const totalCO2 = history.reduce((sum, item) => {
-        const co2Match = item.ecoImpact.match(/(\d+)kg/);
-        return sum + (co2Match ? parseInt(co2Match[1]) : 0);
-      }, 0);
+        const totalCO2 = history.reduce((sum, item) => {
+            // Match numbers (including decimals) followed by optional space and "kg" or "CO₂"
+            const co2Match = item.ecoImpact.match(/(\d+\.?\d*)\s*kg/i);
+            return sum + (co2Match ? parseFloat(co2Match[1]) : 0);
+        }, 0);
 
       setStats({
         totalValueUnlocked: totalValue,

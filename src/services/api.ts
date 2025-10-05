@@ -239,6 +239,25 @@ export class ApiService {
         }));
     }
 
+    // Get single item by ID with full analysis data
+    static async getItemById(itemId: string): Promise<any> {
+        const token = await this.ensureToken();
+
+        const response = await fetch(`${this.baseUrl}/scanned-items/${itemId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': token,
+                'ngrok-skip-browser-warning': '1234',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch item details');
+        }
+
+        return await response.json();
+    }
+
     // Get user profile with stats (works for both guest and registered)
     static async getProfile(): Promise<any> {
         const token = await this.ensureToken();
@@ -284,7 +303,7 @@ export class ApiService {
     }
 
     // Update item (works for both guest and registered)
-    static async updateItem(itemId: string, updates: Partial<ScannedItem>): Promise<void> {
+    static async updateItem(itemId: string, updates: Partial<any>): Promise<void> {
         const token = await this.ensureToken();
 
         const response = await fetch(`${this.baseUrl}/scanned-items/${itemId}`, {

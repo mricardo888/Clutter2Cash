@@ -17,7 +17,6 @@ class aipriceAnalyzer {
             const imageData = fs.readFileSync(imagePath);
             const base64Image = imageData.toString('base64');
 
-            // Determine mime type
             const mimeType = imagePath.toLowerCase().endsWith('.png')
                 ? 'image/png'
                 : 'image/jpeg';
@@ -66,7 +65,6 @@ Format as JSON with keys: itemName, category, condition, specificModel, brand, f
 
             const text = response.text;
 
-            // Extract JSON from response
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 return JSON.parse(jsonMatch[0]);
@@ -109,8 +107,6 @@ IMPORTANT: Respond ONLY with valid JSON. Use your knowledge of current market pr
             });
 
             const text = response.text;
-
-            // Clean the response - remove markdown code blocks if present
             let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
             const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
@@ -121,6 +117,183 @@ IMPORTANT: Respond ONLY with valid JSON. Use your knowledge of current market pr
             throw new Error('Could not parse current market price');
         } catch (error) {
             throw new Error(`Current market price failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Get selling platforms for the item
+     */
+    async getSellingPlatforms(itemInfo) {
+        try {
+            const prompt = `You are an e-commerce expert. Based on this item, recommend the best online platforms where the user can sell it:
+
+ITEM DETAILS:
+${JSON.stringify(itemInfo, null, 2)}
+
+Provide 3-5 selling platforms that are best suited for this specific item. Consider:
+- Item category and type
+- Target audience
+- Platform fees and ease of use
+- Shipping requirements
+
+Provide response in JSON format:
+{
+  "sellingPlaces": [
+    {
+      "name": "<platform name>",
+      "type": "selling",
+      "address": "Online Marketplace",
+      "website": "<full URL>",
+      "rating": <number between 3.5-5.0>,
+      "distance": "Online",
+      "description": "<brief description of why this platform is good for this item>",
+      "specialInstructions": "<specific tips or requirements for selling this item type>"
+    }
+  ]
+}
+
+IMPORTANT: 
+- Provide realistic, well-known platforms
+- Include accurate website URLs
+- Make descriptions specific to the item category
+- Respond ONLY with valid JSON`;
+
+            const response = await this.ai.models.generateContent({
+                model: 'gemini-2.0-flash-001',
+                contents: prompt
+            });
+
+            const text = response.text;
+            let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+
+            throw new Error('Could not parse selling platforms');
+        } catch (error) {
+            throw new Error(`Selling platforms failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Get donation places for the item
+     */
+    async getDonationPlaces(itemInfo) {
+        try {
+            const prompt = `You are a donation expert. Based on this item, recommend specific organizations and places where the user can donate it:
+
+ITEM DETAILS:
+${JSON.stringify(itemInfo, null, 2)}
+
+Provide 3-5 donation organizations/places that accept this type of item. Consider:
+- Item category and condition
+- Organizations that specifically need this item type
+- Local and national options
+- Tax deduction possibilities
+
+Provide response in JSON format:
+{
+  "donationPlaces": [
+    {
+      "name": "<organization name>",
+      "type": "donation",
+      "address": "<typical location or 'Multiple Locations'>",
+      "phone": "<phone number in format (555) 123-4567>",
+      "website": "<full URL>",
+      "rating": <number between 3.5-5.0>,
+      "distance": "<typical distance or 'Varies by Location'>",
+      "description": "<why this organization is good for this item type>",
+      "hours": "<typical hours>",
+      "specialInstructions": "<specific requirements or instructions for donating this item>"
+    }
+  ]
+}
+
+IMPORTANT: 
+- Recommend real organizations that accept this item category
+- Include accurate contact information
+- Make descriptions specific to the item type
+- Provide helpful donation tips
+- Respond ONLY with valid JSON`;
+
+            const response = await this.ai.models.generateContent({
+                model: 'gemini-2.0-flash-001',
+                contents: prompt
+            });
+
+            const text = response.text;
+            let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+
+            throw new Error('Could not parse donation places');
+        } catch (error) {
+            throw new Error(`Donation places failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Get recycling facilities for the item
+     */
+    async getRecyclingFacilities(itemInfo) {
+        try {
+            const prompt = `You are a recycling expert. Based on this item, recommend specific recycling facilities and programs where the user can properly recycle it:
+
+ITEM DETAILS:
+${JSON.stringify(itemInfo, null, 2)}
+
+Provide 3-5 recycling facilities/programs that accept this type of item. Consider:
+- Item materials and recyclability
+- Specialized recycling requirements (e-waste, hazardous materials, etc.)
+- Environmental certifications
+- Data destruction for electronics
+
+Provide response in JSON format:
+{
+  "recyclingPlaces": [
+    {
+      "name": "<facility/program name>",
+      "type": "recycling",
+      "address": "<typical location or 'Multiple Locations'>",
+      "phone": "<phone number in format (555) 123-4567>",
+      "website": "<full URL>",
+      "rating": <number between 3.5-5.0>,
+      "distance": "<typical distance or 'Varies by Location'>",
+      "description": "<what makes this facility suitable for this item>",
+      "hours": "<typical hours>",
+      "specialInstructions": "<specific requirements for recycling this item type, preparation needed, certifications offered>"
+    }
+  ]
+}
+
+IMPORTANT: 
+- Recommend appropriate recycling facilities for this item category
+- Include accurate contact information
+- Highlight special services (data destruction, hazardous waste handling, etc.)
+- Provide preparation instructions
+- Respond ONLY with valid JSON`;
+
+            const response = await this.ai.models.generateContent({
+                model: 'gemini-2.0-flash-001',
+                contents: prompt
+            });
+
+            const text = response.text;
+            let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+            const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+
+            throw new Error('Could not parse recycling facilities');
+        } catch (error) {
+            throw new Error(`Recycling facilities failed: ${error.message}`);
         }
     }
 
@@ -162,8 +335,6 @@ IMPORTANT:
             });
 
             const text = response.text;
-
-            // Clean the response - remove markdown code blocks if present
             let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
             const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
@@ -226,8 +397,6 @@ IMPORTANT:
             });
 
             const text = response.text;
-
-            // Clean the response - remove markdown code blocks if present
             let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
             const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
@@ -285,8 +454,6 @@ IMPORTANT:
             });
 
             const text = response.text;
-
-            // Clean the response - remove markdown code blocks if present
             let cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
             const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
@@ -319,15 +486,27 @@ IMPORTANT:
             const currentPrice = await this.getCurrentMarketPrice(itemInfo);
             console.log(`Current average price: $${currentPrice.averagePrice}`);
 
-            console.log('\nStep 3: Fetching price history...');
+            console.log('\nStep 3: Getting selling platforms...');
+            const sellingData = await this.getSellingPlatforms(itemInfo);
+            console.log(`Found ${sellingData.sellingPlaces.length} selling platforms`);
+
+            console.log('\nStep 4: Getting donation places...');
+            const donationData = await this.getDonationPlaces(itemInfo);
+            console.log(`Found ${donationData.donationPlaces.length} donation places`);
+
+            console.log('\nStep 5: Getting recycling facilities...');
+            const recyclingData = await this.getRecyclingFacilities(itemInfo);
+            console.log(`Found ${recyclingData.recyclingPlaces.length} recycling facilities`);
+
+            console.log('\nStep 6: Fetching price history...');
             const historyData = await this.getPriceHistory(itemInfo);
             console.log(`Price history data availability: ${historyData.dataAvailability}`);
             console.log(`Historical trend: ${historyData.historicalTrend}`);
 
-            console.log('\nStep 4: Getting AI prediction and recommendation...');
+            console.log('\nStep 7: Getting AI prediction and recommendation...');
             const prediction = await this.getPricePrediction(itemInfo, historyData, currentPrice);
 
-            console.log('\nStep 5: Calculating CO2 emissions saved...');
+            console.log('\nStep 8: Calculating CO2 emissions saved...');
             const co2Data = await this.calculateCO2EmissionsSaved(itemInfo);
             console.log(`CO2 saved by reselling: ${co2Data.co2SavedKg.toFixed(2)} kg`);
 
@@ -339,6 +518,11 @@ IMPORTANT:
                     highest: currentPrice.priceRange.highest.toFixed(2),
                     currency: currentPrice.currency,
                     marketConditions: currentPrice.marketConditions
+                },
+                actionPlaces: {
+                    selling: sellingData.sellingPlaces,
+                    donation: donationData.donationPlaces,
+                    recycling: recyclingData.recyclingPlaces
                 },
                 priceHistory: historyData.priceHistory.map(item => ({
                     price: item.price,
@@ -385,30 +569,4 @@ IMPORTANT:
     }
 }
 
-// Export for use in other files
 export default aipriceAnalyzer;
-
-// Example usage (uncomment to run directly)
-/*
-const analyzer = new aipriceAnalyzer();
-
-// Without description
-analyzer.analyzeItem('./path-to-image.jpg')
-  .then(result => {
-    console.log('\n=== ANALYSIS COMPLETE ===');
-    console.log(JSON.stringify(result, null, 2));
-  })
-  .catch(error => {
-    console.error('Error:', error.message);
-  });
-
-// With description
-analyzer.analyzeItem('./path-to-image.jpg', 'iPhone 15 Pro Max 256GB in Natural Titanium')
-  .then(result => {
-    console.log('\n=== ANALYSIS COMPLETE ===');
-    console.log(JSON.stringify(result, null, 2));
-  })
-  .catch(error => {
-    console.error('Error:', error.message);
-  });
-*/

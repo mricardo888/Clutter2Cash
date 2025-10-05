@@ -227,7 +227,14 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
         console.log("🤖 Analyzing item...");
         const analyzer = new aipriceAnalyzer();
         const result = await analyzer.analyzeItem(imagePath, description);
-        console.log("✅ Analysis complete:", result);
+        console.log("✅ Analysis complete");
+
+        // Log actionPlaces to verify they exist
+        console.log("Action Places received:", {
+            selling: result.actionPlaces?.selling?.length || 0,
+            donation: result.actionPlaces?.donation?.length || 0,
+            recycling: result.actionPlaces?.recycling?.length || 0
+        });
 
         // Validate and normalize category
         const validCategories = [
@@ -236,7 +243,6 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
 
         let category = result.itemInfo?.category || 'Other';
         if (!validCategories.includes(category)) {
-            // Try to map common variations
             const categoryMap = {
                 'technology': 'Electronics',
                 'tech': 'Electronics',
@@ -264,7 +270,6 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
         let condition = result.itemInfo?.condition || 'Good';
 
         if (!validConditions.includes(condition)) {
-            // Try to map common variations
             const conditionMap = {
                 'brand new': 'New',
                 'mint': 'Like New',
@@ -292,13 +297,12 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
         const validTrends = ['rising', 'stable', 'falling'];
         let marketTrend = (result.marketTrend || 'stable').toLowerCase();
         if (!validTrends.includes(marketTrend)) {
-            // Map common variations
             if (marketTrend === 'declining') marketTrend = 'falling';
             else marketTrend = 'stable';
         }
 
         const scannedItem = new ScannedItem({
-            userId: req.user.id.toString(), // Ensure it's a string
+            userId: req.user.id.toString(),
             isGuestItem: req.user.isGuest,
             itemName: result.itemInfo?.itemName || "Unknown Item",
             description: result.itemInfo?.description || description,
@@ -318,10 +322,17 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
                 },
                 marketTrend: marketTrend
             },
-            fullAnalysis: result
+            fullAnalysis: result  // This should include actionPlaces!
         });
 
         await scannedItem.save();
+
+        // Verify saved data
+        console.log("📦 Saved item with fullAnalysis:", {
+            id: scannedItem._id,
+            hasFullAnalysis: !!scannedItem.fullAnalysis,
+            hasActionPlaces: !!scannedItem.fullAnalysis?.actionPlaces
+        });
 
         console.log("📤 Sending response (saved to DB)");
         const response = {
@@ -333,10 +344,10 @@ app.post("/analyze", authenticate, upload.single("image"), async (req, res) => {
             category: scannedItem.category,
             timestamp: scannedItem.createdAt,
             saved: true,
-            isGuest: req.user.isGuest
+            isGuest: req.user.isGuest,
+            actionPlaces: result.actionPlaces // Add this line to include actionPlaces in response
         };
 
-        // If guest token was created, send it back
         if (req.guestToken) {
             response.guestToken = req.guestToken;
             response.message = "Guest session created. Sign up to keep your items permanently!";
@@ -380,23 +391,69 @@ app.get("/scanned-items", authenticate, async (req, res) => {
 });
 
 // Get single scanned item by ID
+// Get single scanned item by ID
 app.get("/scanned-items/:id", authenticate, async (req, res) => {
     try {
+        console.log("📥 Fetching item:", req.params.id);
+        console.log("📥 User ID:", req.user.id);
+
+        // Validate MongoDB ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            console.log("❌ Invalid item ID format");
+            return res.status(400).json({ error: "Invalid item ID format" });
+        }
+
         const item = await ScannedItem.findOne({
             _id: req.params.id,
-            userId: req.user.id
+            userId: req.user.id.toString() // Ensure userId is a string
         });
 
         if (!item) {
+            console.log("❌ Item not found");
+            console.log("Debug - Trying to find any item with this ID...");
+
+            // Debug: Try finding without userId filter
+            const anyItem = await ScannedItem.findById(req.params.id);
+            if (anyItem) {
+                console.log("Found item but userId doesn't match:", {
+                    itemUserId: anyItem.userId,
+                    requestUserId: req.user.id.toString(),
+                    match: anyItem.userId === req.user.id.toString()
+                });
+            } else {
+                console.log("Item ID doesn't exist in database at all");
+            }
+
             return res.status(404).json({ error: "Item not found" });
         }
 
-        res.json(item);
+        console.log("✅ Item found:", {
+            id: item._id,
+            name: item.itemName,
+            hasFullAnalysis: !!item.fullAnalysis,
+            fullAnalysisKeys: item.fullAnalysis ? Object.keys(item.fullAnalysis) : [],
+            hasActionPlaces: !!item.fullAnalysis?.actionPlaces
+        });
+
+        // Convert Mongoose document to plain object to ensure all data is included
+        const itemObject = item.toObject();
+
+        console.log("Sending item with actionPlaces:", {
+            hasActionPlaces: !!itemObject.fullAnalysis?.actionPlaces,
+            sellingCount: itemObject.fullAnalysis?.actionPlaces?.selling?.length || 0,
+            donationCount: itemObject.fullAnalysis?.actionPlaces?.donation?.length || 0,
+            recyclingCount: itemObject.fullAnalysis?.actionPlaces?.recycling?.length || 0
+        });
+
+        res.json(itemObject);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("❌ Error fetching item:", error);
+        res.status(500).json({
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
-
 // Get items by category
 app.get("/scanned-items/category/:category", authenticate, async (req, res) => {
     try {

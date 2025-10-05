@@ -167,19 +167,21 @@ export default function HomeScreen({ navigation }: Props) {
       setCurrentStep("complete");
       setProgress(1);
 
-      const scannedItem: ScannedItem = {
-        id: Date.now().toString(),
+    const scannedItem: ScannedItem = {
+        id: analysis.id || Date.now().toString(),
         name: analysis.item,
         value: analysis.value,
         ecoImpact: analysis.ecoImpact,
         imageUri: selectedImage || undefined,
         timestamp: new Date(),
-      };
+    };
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Small delay to show completion
-      await new Promise((resolve) => setTimeout(resolve, 300));
+    navigation.navigate("Results", {
+        item: scannedItem,
+        analysisResult: analysis
+    });
 
-      navigation.navigate("Results", { item: scannedItem });
     } catch (error) {
       Alert.alert("Error", "Failed to analyze item. Please try again.");
     } finally {

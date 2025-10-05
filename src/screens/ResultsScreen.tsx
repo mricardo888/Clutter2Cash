@@ -38,13 +38,30 @@ export default function ResultsScreen({ navigation, route }: Props) {
 
   const handleShare = async () => {
     try {
-      await Linking.openURL(
-        `https://example.com/share?item=${encodeURIComponent(
-          item.name
-        )}&value=${item.value}`
-      );
-    } catch (error) {
-      Alert.alert("Error", "Unable to open share link");
+      // Calculate CO2 savings (rough estimate: $1 value = 0.1kg CO2 saved)
+      const co2Saved = (item.value * 0.1).toFixed(1);
+
+      // Create shareable message
+      const shareText = `💰 I just unlocked $${item.value} from my ${item.name} using Clutter2Cash! ♻️\n\n` +
+        `🌍 Environmental impact: ${co2Saved}kg CO₂ saved by keeping items in circulation.\n\n` +
+        `Stop throwing money away - turn your clutter into cash! 📱\n` +
+        `#Clutter2Cash #CircularEconomy #Sustainability`;
+
+      // Use React Native Share API
+      const Share = require('react-native').Share;
+
+      await Share.share({
+        message: shareText,
+        title: `I made $${item.value} decluttering!`,
+      }, {
+        // iOS specific
+        subject: `Check out my Clutter2Cash savings!`,
+      });
+    } catch (error: any) {
+      // User cancelled or error occurred
+      if (error.message !== 'User did not share') {
+        Alert.alert("Error", "Unable to share. Please try again.");
+      }
     }
   };
 

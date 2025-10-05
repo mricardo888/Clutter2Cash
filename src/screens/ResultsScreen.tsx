@@ -73,13 +73,23 @@ export default function ResultsScreen({ navigation, route }: Props) {
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <TrendingUp size={24} color={theme.colors.success} />
-              <Text style={styles.statValue}>${item.value}</Text>
+              <Text style={styles.statValue}>${item.value.toFixed(2)}</Text>
               <Text style={styles.statLabel}>Estimated Value</Text>
             </View>
 
             <View style={styles.statItem}>
               <Leaf size={24} color={theme.colors.primary} />
-              <Text style={styles.statValue}>{item.ecoImpact}</Text>
+              <Text style={styles.statValue}>
+                {(() => {
+                  // Extract number from ecoImpact string and format to 1 decimal
+                  const match = item.ecoImpact.match(/(\d+\.?\d*)/);
+                  if (match) {
+                    const num = parseFloat(match[1]);
+                    return item.ecoImpact.replace(match[1], num.toFixed(1));
+                  }
+                  return item.ecoImpact;
+                })()}
+              </Text>
               <Text style={styles.statLabel}>Eco Impact</Text>
             </View>
           </View>
@@ -198,6 +208,7 @@ const createStyles = (theme: any) =>
     statItem: {
       alignItems: "center",
       flex: 1,
+      minWidth: 0, // Allow flex to work properly
     },
     statValue: {
       fontSize: 18,
@@ -205,6 +216,8 @@ const createStyles = (theme: any) =>
       color: theme.colors.text,
       marginTop: 4,
       marginBottom: 4,
+      textAlign: "center",
+      width: "100%", // Ensure full width for proper centering
     },
     statLabel: {
       fontSize: 12,

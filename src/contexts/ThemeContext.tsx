@@ -180,11 +180,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         colors: {
           ...MD3DarkTheme.colors,
           primary: theme.colors.primary,
-          secondary: theme.colors.primary, // Use primary instead of blue
+          secondary: theme.colors.primary,
+          tertiary: theme.colors.primary,
           surface: theme.colors.surface,
           background: theme.colors.background,
           onSurface: theme.colors.text,
           onBackground: theme.colors.text,
+          onPrimary: "#FFFFFF",
+          onSecondary: "#FFFFFF",
         },
       }
     : {
@@ -192,11 +195,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         colors: {
           ...MD3LightTheme.colors,
           primary: theme.colors.primary,
-          secondary: theme.colors.primary, // Use primary instead of blue
+          secondary: theme.colors.primary,
+          tertiary: theme.colors.primary,
           surface: theme.colors.surface,
           background: theme.colors.background,
           onSurface: theme.colors.text,
           onBackground: theme.colors.text,
+          onPrimary: "#FFFFFF",
+          onSecondary: "#FFFFFF",
         },
       };
 

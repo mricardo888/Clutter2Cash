@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  Linking,
-  Platform,
-} from "react-native";
+import { View, StyleSheet, ScrollView, Alert, Linking } from "react-native";
 import {
   Button,
   Card,
@@ -18,10 +11,8 @@ import {
   ActivityIndicator,
 } from "react-native-paper";
 import {
-  MapPin,
   Phone,
   Globe,
-  Navigation,
   DollarSign,
   Heart,
   Recycle,
@@ -55,7 +46,6 @@ interface Place {
   phone?: string;
   website?: string;
   rating?: number;
-  distance?: string;
   description: string;
   specialInstructions?: string;
   hours?: string;
@@ -171,15 +161,6 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
     Linking.openURL(website);
   };
 
-  const handleDirections = (address: string) => {
-    const encodedAddress = encodeURIComponent(address);
-    const url =
-      Platform.OS === "ios"
-        ? `maps:0,0?q=${encodedAddress}`
-        : `geo:0,0?q=${encodedAddress}`;
-    Linking.openURL(url);
-  };
-
   const handleChoosePlace = async (place: Place) => {
     setLoading(true);
 
@@ -254,7 +235,7 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <MapPin size={48} color={theme.colors.primary} />
+        <Globe size={48} color={theme.colors.primary} />
         <Title style={styles.title}>Find Places</Title>
         <Paragraph style={styles.subtitle}>
           Discover where you can {selectedType} your {item.name}
@@ -326,7 +307,6 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
                 <View style={styles.placeHeader}>
                   <View style={styles.placeInfo}>
                     <Title style={styles.placeName}>{place.name}</Title>
-                    <Text style={styles.placeAddress}>{place.address}</Text>
                   </View>
                   {place.rating && (
                     <View style={styles.ratingContainer}>
@@ -339,13 +319,6 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
                 <Paragraph style={styles.placeDescription}>
                   {place.description}
                 </Paragraph>
-
-                {place.distance && (
-                  <View style={styles.distanceContainer}>
-                    <MapPin size={14} color={theme.colors.placeholder} />
-                    <Text style={styles.distance}>{place.distance}</Text>
-                  </View>
-                )}
 
                 {place.hours && <Text style={styles.hours}>{place.hours}</Text>}
 
@@ -384,21 +357,6 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
                       Website
                     </Button>
                   )}
-
-                  {place.type !== "selling" &&
-                    place.address !== "Online Marketplace" &&
-                    place.address !== "Mobile App" && (
-                      <Button
-                        mode="outlined"
-                        onPress={() => handleDirections(place.address)}
-                        icon={() => (
-                          <Navigation size={16} color={theme.colors.primary} />
-                        )}
-                        style={styles.actionButton}
-                      >
-                        Directions
-                      </Button>
-                    )}
 
                   <Button
                     mode="contained"
@@ -506,10 +464,6 @@ const createStyles = (theme: any) =>
       color: theme.colors.text,
       marginBottom: 4,
     },
-    placeAddress: {
-      fontSize: 14,
-      color: theme.colors.placeholder,
-    },
     ratingContainer: {
       flexDirection: "row",
       alignItems: "center",
@@ -524,16 +478,6 @@ const createStyles = (theme: any) =>
       fontSize: 14,
       color: theme.colors.text,
       marginBottom: 8,
-    },
-    distanceContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 4,
-    },
-    distance: {
-      marginLeft: 4,
-      fontSize: 12,
-      color: theme.colors.placeholder,
     },
     hours: {
       fontSize: 12,

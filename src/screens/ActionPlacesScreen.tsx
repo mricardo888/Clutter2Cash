@@ -165,11 +165,44 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
     setLoading(true);
 
     try {
+      console.log("Choosing place:", {
+        placeName: place.name,
+        placeType: place.type,
+        itemId: item.id,
+        itemName: item.name,
+      });
+
+      // Validate required data
+      if (!item.id) {
+        throw new Error("Item ID is missing");
+      }
+
+      if (!place.type) {
+        throw new Error("Place type is missing");
+      }
+
+      // Normalize the status value to match backend expectations
+      const normalizedType = place.type?.toLowerCase().trim();
+      const statusValue =
+        normalizedType === "selling" || normalizedType === "sell"
+          ? "listed"
+          : normalizedType === "donation" || normalizedType === "donate"
+          ? "donated"
+          : normalizedType === "recycling" ||
+            normalizedType === "recycle" ||
+            normalizedType === "recyclable"
+          ? "recycling"
+          : "scanned"; // fallback
+
+      console.log("Sending update with status:", statusValue);
+
       // Update the item status based on the action type
       await ApiService.updateItem(item.id, {
-        status: place.type === "selling" ? "listed" : place.type,
+        status: statusValue,
         userNotes: `Chose ${place.name} for ${place.type}`,
       });
+
+      console.log("Update successful!");
 
       setLoading(false);
 
@@ -189,19 +222,31 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
       );
     } catch (error) {
       setLoading(false);
-      Alert.alert("Error", "Failed to save your choice. Please try again.", [
+      console.error("Error choosing place:", error);
+
+      // Show more specific error message
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      Alert.alert("Error", `Failed to save your choice: ${errorMessage}`, [
         { text: "OK" },
       ]);
     }
   };
 
   const getTypeIcon = (type: string) => {
-    switch (type) {
+    // Normalize type values to handle backend inconsistencies
+    const normalizedType = type?.toLowerCase().trim();
+
+    switch (normalizedType) {
       case "selling":
+      case "sell":
         return <DollarSign size={20} color={theme.colors.success} />;
       case "donation":
+      case "donate":
         return <Heart size={20} color="#E91E63" />;
       case "recycling":
+      case "recycle":
+      case "recyclable":
         return <Recycle size={20} color={theme.colors.primary} />;
       default:
         return null;
@@ -209,14 +254,29 @@ export default function ActionPlacesScreen({ navigation, route }: Props) {
   };
 
   const getTypeColor = (type: string) => {
-    switch (type) {
+    // Normalize type values to handle backend inconsistencies
+    const normalizedType = type?.toLowerCase().trim();
+
+    console.log(
+      "Getting color for type:",
+      type,
+      "-> normalized:",
+      normalizedType
+    );
+
+    switch (normalizedType) {
       case "selling":
+      case "sell":
         return theme.colors.success;
       case "donation":
+      case "donate":
         return "#E91E63";
       case "recycling":
+      case "recycle":
+      case "recyclable":
         return theme.colors.primary;
       default:
+        console.warn("Unknown type for color:", type);
         return theme.colors.disabled;
     }
   };

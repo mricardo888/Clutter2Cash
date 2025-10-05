@@ -61,15 +61,15 @@ export default function DashboardScreen({ navigation }: Props) {
 
       // Calculate stats
       const totalValue = history.reduce((sum, item) => sum + item.value, 0);
-        const totalCO2 = history.reduce((sum, item) => {
-            // Match numbers (including decimals) followed by optional space and "kg" or "CO₂"
-            const co2Match = item.ecoImpact.match(/(\d+\.?\d*)\s*kg/i);
-            return sum + (co2Match ? parseFloat(co2Match[1]) : 0);
-        }, 0);
+      const totalCO2 = history.reduce((sum, item) => {
+        // Match numbers (including decimals) followed by optional space and "kg" or "CO₂"
+        const co2Match = item.ecoImpact.match(/(\d+\.?\d*)\s*kg/i);
+        return sum + (co2Match ? parseFloat(co2Match[1]) : 0);
+      }, 0);
 
       setStats({
         totalValueUnlocked: totalValue,
-        totalCO2Saved: `${totalCO2}kg`,
+        totalCO2Saved: `${totalCO2.toFixed(1)}kg`,
         itemsScanned: history.length,
         badges:
           history.length >= 5
@@ -155,11 +155,21 @@ export default function DashboardScreen({ navigation }: Props) {
         <View style={styles.itemDetails}>
           <View style={styles.itemStat}>
             <DollarSign size={16} color={theme.colors.success} />
-            <Text style={styles.itemStatText}>${item.value}</Text>
+            <Text style={styles.itemStatText}>${item.value.toFixed(2)}</Text>
           </View>
           <View style={styles.itemStat}>
             <Leaf size={16} color={theme.colors.primary} />
-            <Text style={styles.itemStatText}>{item.ecoImpact}</Text>
+            <Text style={styles.itemStatText}>
+              {(() => {
+                // Extract number from ecoImpact string and format to 1 decimal
+                const match = item.ecoImpact.match(/(\d+\.?\d*)/);
+                if (match) {
+                  const num = parseFloat(match[1]);
+                  return item.ecoImpact.replace(match[1], num.toFixed(1));
+                }
+                return item.ecoImpact;
+              })()}
+            </Text>
           </View>
         </View>
 
@@ -178,7 +188,9 @@ export default function DashboardScreen({ navigation }: Props) {
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
             <DollarSign size={24} color={theme.colors.success} />
-            <Text style={styles.statValue}>${stats.totalValueUnlocked}</Text>
+            <Text style={styles.statValue}>
+              ${stats.totalValueUnlocked.toFixed(2)}
+            </Text>
             <Text style={styles.statLabel}>Total Value Unlocked</Text>
           </View>
 
@@ -339,6 +351,7 @@ const createStyles = (theme: any, insets: any) =>
     statItem: {
       alignItems: "center",
       flex: 1,
+      minWidth: 0, // Allow flex to work properly
     },
     statValue: {
       fontSize: 18,
@@ -346,6 +359,8 @@ const createStyles = (theme: any, insets: any) =>
       color: theme.colors.text,
       marginTop: 4,
       marginBottom: 4,
+      textAlign: "center",
+      width: "100%", // Ensure full width for proper centering
     },
     statLabel: {
       fontSize: 12,

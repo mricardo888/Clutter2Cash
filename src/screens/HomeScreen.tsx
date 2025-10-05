@@ -134,7 +134,7 @@ export default function HomeScreen({ navigation }: Props) {
     setProgress(0);
 
     try {
-      console.log('first')
+      console.log("first");
       // Step 1: Uploading (fast)
       setCurrentStep("uploading");
       setProgress(0.2);
@@ -154,34 +154,33 @@ export default function HomeScreen({ navigation }: Props) {
       setCurrentStep("fetching_prices");
       setProgress(0.9);
 
-      console.log('second')
+      console.log("second");
       // Make the actual API call
       const analysis = await ApiService.analyzeItem(
         selectedImage || undefined,
         textInput
       );
 
-      console.log('done')
+      console.log("done");
 
       // Complete
       setCurrentStep("complete");
       setProgress(1);
 
-    const scannedItem: ScannedItem = {
+      const scannedItem: ScannedItem = {
         id: analysis.id || Date.now().toString(),
         name: analysis.item,
         value: analysis.value,
         ecoImpact: analysis.ecoImpact,
         imageUri: selectedImage || undefined,
         timestamp: new Date(),
-    };
-    await new Promise((resolve) => setTimeout(resolve, 300));
+      };
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-    navigation.navigate("Results", {
+      navigation.navigate("Results", {
         item: scannedItem,
-        analysisResult: analysis
-    });
-
+        analysisResult: analysis,
+      });
     } catch (error) {
       Alert.alert("Error", "Failed to analyze item. Please try again.");
     } finally {
@@ -260,7 +259,8 @@ export default function HomeScreen({ navigation }: Props) {
                 <Button
                   mode="contained"
                   onPress={takePhoto}
-                  style={styles.photoButton}
+                  style={[styles.photoButton, { backgroundColor: "#4CAF50" }]}
+                  textColor="white"
                   icon={() => <Camera size={20} color="white" />}
                   disabled={isAnalyzing}
                 >

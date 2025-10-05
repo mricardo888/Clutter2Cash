@@ -50,7 +50,6 @@ export default function ProfileScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [notifications, setNotifications] = useState(true);
   const [ecoTips, setEcoTips] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(isDark);
 
   const handleThemeModeChange = (mode: "light" | "dark" | "system") => {
     setThemeMode(mode);
@@ -65,14 +64,9 @@ export default function ProfileScreen({ navigation }: Props) {
   };
 
   const handleDarkModeToggle = (value: boolean) => {
-    setDarkModeEnabled(value);
+    // Use theme context directly - no local state needed
     toggleTheme();
   };
-
-  // Sync local dark mode state with theme context
-  useEffect(() => {
-    setDarkModeEnabled(isDark);
-  }, [isDark]);
 
   const handleShare = () => {
     Alert.alert(
@@ -169,16 +163,14 @@ export default function ProfileScreen({ navigation }: Props) {
               left={() => <Moon size={24} color={theme.colors.primary} />}
               right={() => (
                 <Switch
-                  value={darkModeEnabled}
+                  value={isDark}
                   onValueChange={handleDarkModeToggle}
                   trackColor={{
                     false: theme.colors.disabled,
                     true: theme.colors.primary,
                   }}
                   thumbColor={
-                    darkModeEnabled
-                      ? theme.colors.surface
-                      : theme.colors.disabled
+                    isDark ? theme.colors.surface : theme.colors.disabled
                   }
                 />
               )}

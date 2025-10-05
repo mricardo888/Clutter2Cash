@@ -113,22 +113,29 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [themeMode, setThemeMode] = useState<ThemeMode>("system");
-  const [isDark, setIsDark] = useState(false);
+  const [systemColorScheme, setSystemColorScheme] = useState<
+    "light" | "dark" | null
+  >(null);
 
   useEffect(() => {
     // Load saved theme preference
     loadThemePreference();
+
+    // Listen to system color scheme changes
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      setSystemColorScheme(colorScheme || "light");
+    });
+
+    // Get initial system color scheme
+    setSystemColorScheme(Appearance.getColorScheme() || "light");
+
+    return () => subscription?.remove();
   }, []);
 
-  useEffect(() => {
-    // Update dark mode based on system preference when mode is 'system'
-    if (themeMode === "system") {
-      const systemColorScheme = Appearance.getColorScheme();
-      setIsDark(systemColorScheme === "dark");
-    } else {
-      setIsDark(themeMode === "dark");
-    }
-  }, [themeMode]);
+  // Derive isDark directly from themeMode and system preference
+  const isDark =
+    themeMode === "dark" ||
+    (themeMode === "system" && systemColorScheme === "dark");
 
   const loadThemePreference = async () => {
     try {
@@ -151,12 +158,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const toggleTheme = () => {
     const newMode = isDark ? "light" : "dark";
+    // Update themeMode immediately for instant UI response
     setThemeMode(newMode);
+    // Save to storage in background (non-blocking)
     saveThemePreference(newMode);
   };
 
   const handleSetThemeMode = (mode: ThemeMode) => {
+    // Update state immediately for instant UI response
     setThemeMode(mode);
+    // Save to storage in background (non-blocking)
     saveThemePreference(mode);
   };
 

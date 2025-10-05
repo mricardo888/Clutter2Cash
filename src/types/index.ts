@@ -27,6 +27,7 @@ export interface UserStats {
 export type RootStackParamList = {
   Home: undefined;
   Results: { item: ScannedItem };
+  ActionPlaces: { item: ScannedItem };
   Dashboard: undefined;
   Profile: undefined;
   Login: undefined;

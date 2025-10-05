@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import HomeScreen from "../screens/HomeScreen";
 import ResultsScreen from "../screens/ResultsScreen";
+import ActionPlacesScreen from "../screens/ActionPlacesScreen";
 import DashboardScreen from "../screens/DashboardScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import LoginScreen from "../screens/LoginScreen";
@@ -126,6 +127,13 @@ export default function AppNavigator() {
             options={{
               title: "Analysis Results",
               headerLeft: () => null,
+            }}
+          />
+          <Stack.Screen
+            name="ActionPlaces"
+            component={ActionPlacesScreen}
+            options={{
+              title: "Find Places",
             }}
           />
           <Stack.Screen

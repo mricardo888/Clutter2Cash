@@ -44,7 +44,7 @@ Perfect for rapid hackathon development.
 ### 🔧 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/clutter2cash.git
+git clone https://github.com/Clutter2Cash/clutter2cash.git
 cd clutter2cash
 ```
 

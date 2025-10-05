@@ -281,13 +281,6 @@ export default function DashboardScreen({ navigation }: Props) {
             </Card>
           }
         />
-
-        <FAB
-          style={[styles.fab, { bottom: insets.bottom + 76 }]}
-          icon="plus"
-          label="Scan Item"
-          onPress={() => navigation.navigate("Home")}
-        />
       </View>
     </>
   );

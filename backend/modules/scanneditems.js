@@ -47,23 +47,38 @@ const scannedItemSchema = new mongoose.Schema({
 
     estimatedValue: {
         type: Number,
-        default: 0
+        required: true,
+        min: 0
     },
 
+    condition: {
+        type: String,
+        enum: ['New', 'Like New', 'Good', 'Fair', 'Poor'],
+        default: 'Good'
+    },
+
+    // Environmental impact
     ecoImpact: {
         co2SavedKg: {
             type: Number,
             default: 0
         },
-        description: String
+        description: {
+            type: String,
+            default: function() {
+                return `${this.ecoImpact.co2SavedKg} kg CO₂ saved`;
+            }
+        }
     },
 
+    // Analysis details
     confidence: {
         type: String,
-        enum: ['high', 'medium', 'low'],
+        enum: ['low', 'medium', 'high'],
         default: 'medium'
     },
 
+    // Price analysis
     priceAnalysis: {
         currentAverage: Number,
         priceRange: {
@@ -72,30 +87,10 @@ const scannedItemSchema = new mongoose.Schema({
         },
         marketTrend: {
             type: String,
-            enum: ['rising', 'stable', 'declining'],
+            enum: ['rising', 'stable', 'falling'],
             default: 'stable'
         }
     },
-
-    // Item status tracking
-    status: {
-        type: String,
-        enum: ['scanned', 'listed', 'sold'],
-        default: 'scanned'
-    },
-
-    // Listing details
-    listedPrice: Number,
-    listedPlatform: String,
-    listedUrl: String,
-    listedAt: Date,
-
-    // Sale details
-    soldPrice: Number,
-    soldAt: Date,
-
-    // User notes
-    userNotes: String,
 
     // Images
     images: [{
@@ -106,84 +101,116 @@ const scannedItemSchema = new mongoose.Schema({
         }
     }],
 
-    // Full AI analysis result (stored for reference)
+    // Full AI analysis result (stored as JSON)
     fullAnalysis: {
-        type: mongoose.Schema.Types.Mixed,
-        select: false // Don't include by default to reduce payload
-    }
+        type: mongoose.Schema.Types.Mixed
+    },
+
+    // Status tracking
+    status: {
+        type: String,
+        enum: ['scanned', 'listed', 'sold', 'donated', 'kept'],
+        default: 'scanned'
+    },
+
+    // Marketplace info (if listed)
+    marketplace: {
+        isListed: {
+            type: Boolean,
+            default: false
+        },
+        listingPrice: Number,
+        platform: String, // e.g., 'eBay', 'Facebook Marketplace'
+        listingUrl: String,
+        listedAt: Date,
+        soldAt: Date,
+        soldPrice: Number
+    },
+
+    // Tags for searchability
+    tags: [String],
+
+    // Notes from user
+    userNotes: String
+
 }, {
-    timestamps: true
+    timestamps: true  // Adds createdAt and updatedAt
 });
 
 // Indexes for better query performance
 scannedItemSchema.index({ userId: 1, createdAt: -1 });
 scannedItemSchema.index({ userId: 1, category: 1 });
-scannedItemSchema.index({ userId: 1, status: 1 });
+scannedItemSchema.index({ status: 1 });
+scannedItemSchema.index({ category: 1 });
+scannedItemSchema.index({ 'marketplace.isListed': 1 });
 
-// Instance methods
+// Virtual for total eco impact display
+scannedItemSchema.virtual('ecoImpactDisplay').get(function() {
+    return `${this.ecoImpact.co2SavedKg} kg CO₂ saved`;
+});
+
+// Method to mark item as listed
 scannedItemSchema.methods.markAsListed = function(price, platform, url) {
     this.status = 'listed';
-    this.listedPrice = price;
-    this.listedPlatform = platform;
-    this.listedUrl = url;
-    this.listedAt = new Date();
+    this.marketplace.isListed = true;
+    this.marketplace.listingPrice = price;
+    this.marketplace.platform = platform;
+    this.marketplace.listingUrl = url;
+    this.marketplace.listedAt = new Date();
     return this.save();
 };
 
+// Method to mark item as sold
 scannedItemSchema.methods.markAsSold = function(soldPrice) {
     this.status = 'sold';
-    this.soldPrice = soldPrice;
-    this.soldAt = new Date();
+    this.marketplace.soldAt = new Date();
+    this.marketplace.soldPrice = soldPrice || this.marketplace.listingPrice;
     return this.save();
 };
 
-// Static methods for aggregations
+// Static method to get user's total value
 scannedItemSchema.statics.getUserTotalValue = async function(userId) {
     const result = await this.aggregate([
         { $match: { userId: userId } },
-        {
-            $group: {
+        { $group: {
                 _id: null,
                 totalValue: { $sum: '$estimatedValue' },
-                itemCount: { $sum: 1 },
-                totalCO2Saved: { $sum: '$ecoImpact.co2SavedKg' }
-            }
-        }
+                totalCO2Saved: { $sum: '$ecoImpact.co2SavedKg' },
+                itemCount: { $sum: 1 }
+            }}
     ]);
-
-    return result[0] || { totalValue: 0, itemCount: 0, totalCO2Saved: 0 };
+    return result[0] || { totalValue: 0, totalCO2Saved: 0, itemCount: 0 };
 };
 
+// Static method to get user's items by category
 scannedItemSchema.statics.getUserItemsByCategory = async function(userId) {
     return await this.aggregate([
         { $match: { userId: userId } },
-        {
-            $group: {
+        { $group: {
                 _id: '$category',
                 count: { $sum: 1 },
                 totalValue: { $sum: '$estimatedValue' }
-            }
-        },
+            }},
         { $sort: { count: -1 } }
     ]);
 };
 
-scannedItemSchema.statics.getRecentScans = async function(userId, limit = 5) {
-    return await this.find({ userId: userId })
+// Static method to get recent scans
+scannedItemSchema.statics.getRecentScans = async function(userId, limit = 10) {
+    return await this.find({ userId })
         .sort({ createdAt: -1 })
         .limit(limit)
-        .select('-fullAnalysis');
+        .select('-fullAnalysis'); // Exclude heavy analysis data
 };
 
-// Virtual for age of item
-scannedItemSchema.virtual('age').get(function() {
-    return Math.floor((Date.now() - this.createdAt) / (1000 * 60 * 60 * 24));
+// Pre-save middleware to auto-generate tags
+scannedItemSchema.pre('save', function(next) {
+    if (this.isModified('itemName') || this.isModified('category')) {
+        const nameTags = this.itemName.toLowerCase().split(' ');
+        const categoryTag = this.category.toLowerCase();
+        this.tags = [...new Set([...nameTags, categoryTag])];
+    }
+    next();
 });
 
-// Ensure virtuals are included in JSON
-scannedItemSchema.set('toJSON', { virtuals: true });
-scannedItemSchema.set('toObject', { virtuals: true });
-
-const ScannedItem = mongoose.model('ScannedItem', scannedItemSchema);
-
-export default ScannedItem;
+export default mongoose.model("ScannedItem", scannedItemSchema);

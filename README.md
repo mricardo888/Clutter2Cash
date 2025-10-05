@@ -33,7 +33,7 @@ Perfect for rapid hackathon development.
 | **Frontend**  | React Native (Expo)                       |
 | **Backend**   | Node.js + Express                         |
 | **AI Engine** | Google Gemini via `@google/generative-ai` |
-| **Auth**      | Auth0 (planned integration)               |
+| **Auth**      | Auth0                                     |
 | **Database**  | MongoDB (Mongoose)                        |
 | **Tunnel**    | ngrok                                     |
 

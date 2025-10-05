@@ -20,23 +20,12 @@ mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/clutter2cas
     .catch(err => console.error("❌ MongoDB connection error:", err));
 
 // --- Middleware ---
+
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        const allowedOrigins = [
-            'http://localhost:8081',
-            'http://localhost:8082',
-            'http://localhost:19006',
-            'http://localhost:19000'
-        ];
-        if (allowedOrigins.indexOf(origin) !== -1 || origin.match(/^https:\/\/.*\.exp\.direct$/)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
+    credentials: true,
+    origin: true
 }));
+
 app.use(express.json());
 
 const upload = multer({ dest: "uploads/" });
